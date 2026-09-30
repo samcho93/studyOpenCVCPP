@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenCV5Starter", "OpenCV5St
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch15_Camera", "Ch15_Camera\Ch15_Camera.vcxproj", "{CC0AF953-FCAA-48DD-83C0-1FF6723B03ED}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch16_ImageStudio", "Ch16_ImageStudio\Ch16_ImageStudio.vcxproj", "{BB325EDA-F92F-4E96-9B28-276265D317B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{CC0AF953-FCAA-48DD-83C0-1FF6723B03ED}.Debug|x64.Build.0 = Debug|x64
 		{CC0AF953-FCAA-48DD-83C0-1FF6723B03ED}.Release|x64.ActiveCfg = Release|x64
 		{CC0AF953-FCAA-48DD-83C0-1FF6723B03ED}.Release|x64.Build.0 = Release|x64
+		{BB325EDA-F92F-4E96-9B28-276265D317B2}.Debug|x64.ActiveCfg = Debug|x64
+		{BB325EDA-F92F-4E96-9B28-276265D317B2}.Debug|x64.Build.0 = Debug|x64
+		{BB325EDA-F92F-4E96-9B28-276265D317B2}.Release|x64.ActiveCfg = Release|x64
+		{BB325EDA-F92F-4E96-9B28-276265D317B2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

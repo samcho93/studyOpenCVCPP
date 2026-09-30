@@ -19,6 +19,7 @@
 |---|---|---|
 | `OpenCV5Starter` | 01 | 설치 · 설정 확인 (버전 · 이미지 읽기 · Canny) |
 | `Ch15_Camera` | 15 | 웹캠 뷰어: VideoCapture · FPS(TickMeter) · 키 조작(스냅샷 · 흑백 · Canny · MOG2 움직임 검출) · VideoWriter 녹화(MJPG .avi) |
+| `Ch16_ImageStudio` | 16 | 이미지 처리 도구: Filter 추상 클래스 · Pipeline · History(undo/redo) · 팩토리 · 키보드 단축키 1~9/z/y/s/o + 트랙바 |
 
 ## 자주 나는 오류
 | 증상 | 원인 · 해결 |
