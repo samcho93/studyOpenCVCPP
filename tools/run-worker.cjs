@@ -47,8 +47,10 @@ parentPort.on('message', async (m) => {
   bridge.reset();
   const enc = new TextEncoder();
   let pre = m.stdin ? enc.encode(m.stdin) : null;
+  const wfiles = Object.assign({}, m.files || {});
+  for (const [k, v] of vfs.files) { const b = v.bytes || v.png; if (b && !wfiles[k]) wfiles[k] = b; }
   const wasi = new WasiRuntime({
-    args: ['main'], files: m.files || {},
+    args: ['main'], files: wfiles,
     write: (fd, b) => {
       const t = dec[fd === 2 ? 2 : 1].decode(b, { stream: true });
       if (fd === 2) err += t; else out += t;

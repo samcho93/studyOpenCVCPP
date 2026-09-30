@@ -103,7 +103,7 @@ async function run(m) {
   };
   // 작업 폴더의 파일(업로드 · 이전 실행 결과)을 C++ 파일(ifstream)로도 읽을 수 있게
   const files = {};
-  for (const [k, v] of vfs.files) if (!/^images\//.test(k)) { const b = v.bytes || v.png; if (b) files[k] = b; }
+  for (const [k, v] of vfs.files) { const b = v.bytes || v.png; if (b) files[k] = b; }
   for (const [k, v] of Object.entries(m.data || {})) files[k] = enc.encode(v.replace(/\n?$/, '\n'));
   const onFileClose = (name, bytes) => { if (bytes && bytes.length != null) vfs.write(name, bytes); };
   const wasi = new self.WasiRuntime({
