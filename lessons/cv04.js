@@ -590,23 +590,23 @@ int main()
           { type: 'figure', html: FIG_SHAPES, caption: '그림 2. 도형별로 다른 것은 "위치를 어떻게 적는가" 뿐이다 — 색 · 두께 · 선 종류는 모두 같은 자리' },
           { type: 'code', title: '예제 1: 선 · 사각형 · 원 (기본 3종)', code: EX1_BASIC,
             desc: '<code>Rect(40, 80, 200, 120)</code> 과 <code>Point(280, 80), Point(479, 199)</code> 가 같은 크기(200×120)의 사각형을 만듭니다 — 두 점 방식은 <b>오른쪽 아래 점이 포함</b>되므로 너비가 <code>x2 − x1 + 1</code> 입니다. 마지막 원은 두께 <code>FILLED</code> 라 안이 채워집니다. 출력의 픽셀 값으로 어디에 무엇이 그려졌는지 확인하세요 (<code>at</code> 은 <b>(행 y, 열 x)</b>!). <code>Vec3b</code> 는 <code>cout</code> 에 바로 넘기면 <code>[B, G, R]</code> 형식의 숫자로 출력됩니다.',
-            expect: '' },
+            expect: '선 위 픽셀        at(40, 300)  = [0, 255, 255]\n채운 원 중심      at(320, 300) = [255, 120, 0]\n빈 원 안쪽        at(320, 120) = [40, 40, 40]\n아무것도 없는 곳  at(460, 620) = [40, 40, 40]' },
           { type: 'code', title: '예제 2: 두께와 선 종류(LINE_AA) 비교', code: EX1_STYLE,
             desc: '두께를 1 → 8 로 키우고 마지막은 <code>FILLED</code>(-1, 채우기)입니다. 아래 두 대각선은 같은 기울기인데 <code>LINE_8</code>(기본)과 <code>LINE_AA</code> 로 그렸습니다. 출력된 <b>세로 단면</b>을 보면 LINE_8 은 배경(30)과 선(255)만 있는데 LINE_AA 는 그 <b>사이 값</b>이 생기는 것이 보입니다 — 이것이 톱니를 눈에 덜 띄게 만드는 원리입니다. 개별 채널 값은 <code>uchar</code> 이므로 <code>(int)</code> 로 바꿔 출력합니다.',
-            expect: '' },
+            expect: 'LINE_8  단면(y=227~233): 30 30 30 255 30 30 30\nLINE_AA 단면(y=227~233): 30 30 86 242 79 30 30' },
           { type: 'callout', kind: 'tip', title: '마스크에는 LINE_AA 금지', html: '이진 마스크(0 또는 255)를 만들려고 <code>circle(mask, …, FILLED, LINE_AA)</code> 를 쓰면 <b>경계에 1~254 의 중간 값</b>이 생겨 <code>countNonZero</code> · <code>copyTo(dst, mask)</code> 결과가 미묘하게 달라집니다. <b>보여 주는 그림에는 LINE_AA, 계산에 쓰는 마스크에는 기본값(LINE_8)</b>이 원칙입니다.' },
           { type: 'h', text: '타원 · 호 · RotatedRect' },
           { type: 'code', title: '예제 3: ellipse — 타원 · 호 · 부채꼴 · RotatedRect', code: EX1_ELLIPSE,
             desc: '<code>Size(a, b)</code> 는 <b>반지름</b>(가로 반지름, 세로 반지름)이지만, <code>RotatedRect</code> 의 <code>size</code> 는 <b>지름</b>(전체 너비, 높이)입니다 — 두 배 차이이니 주의하세요. 각도는 x축에서 <b>시계 방향</b>(y축이 아래를 향하므로)입니다. 12차시에서 <code>fitEllipse</code> 가 돌려주는 RotatedRect 를 이 한 줄로 그립니다. <code>Point2f</code> · <code>Size2f</code> 도 <code>cout</code> 으로 바로 출력됩니다.',
-            expect: '' },
+            expect: '중심 [320, 290], 크기(지름) [300 x 120], 각도 -20\n→ Size(가로 반지름, 세로 반지름) = (150, 60)' },
           { type: 'h', text: '다각형 · 화살표 · 마커' },
           { type: 'code', title: '예제 4: polylines · fillPoly · fillConvexPoly · arrowedLine · drawMarker', code: EX1_POLY,
             desc: '다각형은 <b><code>vector&lt;Point&gt;</code></b> 로 꼭짓점을 적습니다. <code>polylines</code> / <code>fillPoly</code> 는 여러 다각형을 한 번에 그릴 수 있어 인수가 <b>vector 의 vector</b>(<code>vector&lt;vector&lt;Point&gt;&gt;</code>)입니다 — 12차시의 <code>findContours</code> 결과를 그대로 넘길 수 있는 형태입니다. <code>fillConvexPoly</code> 는 볼록 다각형 <b>하나</b>(<code>vector&lt;Point&gt;</code>)만 받고 더 빠릅니다. <code>drawMarker</code> 는 중심을 정확히 찍을 때 십자 · 별 모양을 그려 줍니다. <code>tri.size()</code> 는 <code>size_t</code> 라서 그대로 출력됩니다.',
-            expect: '' },
+            expect: '꼭짓점 수: 삼각형 3, 집 모양 7, 오각 5\n채운 집 모양 안쪽 at(60, 360) = [60, 180, 255]\n빈 삼각형 안쪽    at(60, 130) = [35, 35, 35]' },
           { type: 'h', text: '반복문과 함수로 정리하기' },
           { type: 'code', title: '예제 5: 격자 · 눈금 그리기 (함수로 분리)', code: EX1_GRID,
             desc: '반복되는 그리기는 <b>함수로 떼어 냅니다</b>: <code>void drawGrid(Mat&amp; img, int step)</code> 처럼 "그릴 Mat" 을 인수로 받으면 어떤 이미지에나 다시 쓸 수 있습니다. <code>Mat</code> 은 헤더 + 공유 픽셀 구조라서 값으로 넘겨도(<code>Mat img</code>) 같은 픽셀에 그려지지만, "이 함수가 이미지를 바꾼다"는 뜻을 드러내려고 <b>참조(<code>Mat&amp;</code>)</b>로 받는 것이 좋습니다. 5칸마다 굵은 선을 넣어 좌표를 읽기 쉽게 했습니다. 출력에서 x=200 은 <code>step*5</code> 의 배수라 굵은 선(150)이고 x=240 은 얇은 선(215)입니다. 숫자를 글자로 바꿀 때는 <code>to_string(x)</code> 를 씁니다.',
-            expect: '' },
+            expect: '세로선 17개, 가로선 13개\n굵은 세로선 at(250, 200) = [150, 150, 150]\n얇은 세로선 at(250, 240) = [215, 215, 215]\n칸 안쪽     at(250, 210) = [250, 250, 250]' },
           { type: 'callout', kind: 'tip', title: 'C++ 에는 색 이름 상수가 없다', html: 'C# 의 <code>Scalar.Red</code> 나 Python 의 색 이름 같은 상수는 OpenCV C++ 에 없습니다. 자주 쓰는 색은 직접 상수로 만들어 두세요: <code>const Scalar RED(0, 0, 255), GREEN(0, 255, 0), BLUE(255, 0, 0), YELLOW(0, 255, 255), WHITE(255, 255, 255);</code> 팀 규칙으로 <b>OK = 초록, NG = 빨강, 정보 = 노랑</b>처럼 색을 미리 정해 두면 화면이 훨씬 읽기 쉬워집니다.' },
           { type: 'callout', kind: 'vs', title: 'Visual Studio 에서는', html: '로컬 PC 에서는 <code>imshow</code> 창이 실제로 열립니다. 결과를 다시 그리고 싶을 때(예: 선택한 부품만 강조) 그림이 계속 쌓이지 않게 <b>매번 원본을 <code>clone()</code> 한 뒤 그리고 <code>imshow</code></b> 하는 습관을 들이세요. 창 크기가 이미지보다 작으면 <code>namedWindow("w", WINDOW_NORMAL)</code> 으로 크기를 조절할 수 있는 창을 만듭니다. 그려진 결과는 <code>imwrite</code> 로 저장하면 보고서 · 불량 이력에 그대로 쓸 수 있습니다.' }
         ],
@@ -615,7 +615,7 @@ int main()
             title: '반복문으로 과녁(동심원) 그리기', level: 1,
             desc: '400×400 컬러 캔버스에 중심 (200, 200) 의 <b>과녁</b>을 그리세요. 반지름을 <b>180 → 20 까지 20 씩 줄이며</b> 원을 <code>FILLED</code>(채우기)로 그리고, 색은 빨강 <code>(0,0,255)</code> 과 흰색 <code>(255,255,255)</code> 을 번갈아 씁니다. 마지막으로 중심에 <code>drawMarker</code> 로 십자(크기 40, 두께 2, 검정)를 찍고, 원 개수와 중심 픽셀 · 가장 바깥 원의 픽셀 값을 출력하세요.',
             hint: '<code>for (int r = 180; r &gt;= 20; r -= 20)</code> 안에서 순번 <code>n</code> 을 세어 짝/홀로 색을 고릅니다: <code>Scalar col = (n % 2 == 0) ? Scalar(0, 0, 255) : Scalar(255, 255, 255);</code> 큰 원부터 그려야 작은 원이 위에 남습니다. 십자는 <code>MARKER_CROSS</code>.',
-            expect: '',
+            expect: '원 개수: 9\n중심    at(200, 200) = [0, 0, 0]\n바깥 원 at(200, 30)  = [0, 0, 255]',
             starter: `#include <opencv2/opencv.hpp>
 #include <iostream>
 using namespace cv;
@@ -667,7 +667,7 @@ int main()
             title: '부품 위치 표시 함수 만들기', level: 2,
             desc: '<code>void markPart(Mat&amp; img, Point center, int half, const Scalar&amp; color)</code> 함수를 만들어 ① 중심에 <code>drawMarker</code> 십자(크기 16, 두께 1) ② 한 변 <code>2*half</code> 인 사각형(두께 2)을 그리게 하세요. <code>images/washers.png</code> 를 흑백으로 읽어 <b>3채널로 변환</b>한 뒤 와셔 W1 (90, 90) · 너트 N2 (340, 240) · 볼트 B3 (400, 400) 세 곳을 각각 다른 색(노랑 · 초록 · 빨강)으로 표시하고, 사각형 왼쪽 위 모서리의 픽셀 값을 출력하세요.',
             hint: '사각형은 <code>Rect(center.x - half, center.y - half, 2 * half, 2 * half)</code>. 그레이를 3채널로: <code>cvtColor(gray, view, COLOR_GRAY2BGR)</code>. 색은 BGR 이므로 노랑 = (0,255,255).',
-            expect: '',
+            expect: 'W1 상자 모서리 at(40, 40)   = [0, 255, 255]\nN2 상자 모서리 at(190, 290) = [0, 255, 0]\nB3 상자 모서리 at(350, 350) = [0, 0, 255]',
             starter: `#include <opencv2/opencv.hpp>
 #include <iostream>
 using namespace cv;
@@ -902,7 +902,7 @@ int main()
           ], caption: '표 2. 내장 Hershey 벡터 폰트 8종 — Python 의 cv2.FONT_HERSHEY_* 와 같은 이름' },
           { type: 'code', title: '예제 1: 폰트 8종 비교 (+ 크기 측정)', code: EX2_FONTS,
             desc: '같은 <code>fontScale=0.9</code>, 같은 글자인데도 폰트마다 <b>폭과 높이가 다릅니다</b>. <code>FONT_HERSHEY_PLAIN</code> 이 가장 작습니다 — 그래서 "몇 픽셀 자리를 차지할지"는 항상 <code>getTextSize</code> 로 물어봐야 합니다. C++ 에서는 <code>baseLine</code> 을 <b>포인터</b>(<code>&amp;baseLine</code>)로 넘겨 받습니다(필요 없으면 <code>nullptr</code>). 결과 창에서 필기체(SCRIPT)가 검사 화면에 왜 안 어울리는지도 눈으로 확인하세요.' },
-          { type: 'callout', kind: 'warn', title: '브라우저의 getTextSize 는 근사값', html: '이 사이트의 실행 환경은 <code>getTextSize</code> 를 브라우저 글꼴로 <b>근사 계산</b>합니다. 그래서 출력되는 폭 · 높이 · baseLine 이 Visual Studio(실제 OpenCV)의 값과 <b>몇 픽셀 다를 수 있습니다</b> (예: 실제 OpenCV 에서 SIMPLEX 0.9 의 "OK 12.34 mm" 는 폭 199 · 높이 19 · baseLine 2). 라벨 상자를 만드는 <b>방법</b>은 같으니, 정확한 픽셀 값은 로컬에서 확인하세요.' },
+          { type: 'callout', kind: 'warn', title: '브라우저의 getTextSize 는 근사값', html: '이 사이트의 실행 환경은 <code>getTextSize</code> 의 폭을 글자를 그려서 <b>측정</b>합니다. 그래서 출력되는 폭 · 높이 · baseLine 이 Visual Studio(실제 OpenCV)의 값과 <b>몇 픽셀 다를 수 있습니다</b>. 라벨 상자를 만드는 <b>방법</b>은 같으니, 정확한 픽셀 값은 로컬에서 확인하세요.' },
           { type: 'h', text: 'fontScale · 두께 · getTextSize' },
           { type: 'code', title: '예제 2: fontScale 을 키우며 글자 상자 그리기', code: EX2_SCALE,
             desc: '<code>fontScale</code> 은 <b>배율</b>입니다(1.0 이 기본 크기, 0.5 는 절반). <code>thickness</code> 는 획의 굵기로, 크게 쓸 때는 2~3 이 읽기 좋습니다. 회색 사각형이 <code>getTextSize</code> 로 계산한 <b>글자 상자</b>(높이 = <code>height + baseLine</code>)이고 주황 선이 <b>기준선</b>입니다 — 글자가 상자 안에 들어가는지 확인하세요. 출력을 보면 scale 이 2배가 되면 폭 · 높이도 대략 2배가 됩니다.' },
@@ -915,13 +915,13 @@ int main()
           { type: 'h', text: '결과 오버레이 패널' },
           { type: 'code', title: '예제 4: 측정값 오버레이 패널 (반투명 배경 + OK/NG)', code: EX2_PANEL,
             desc: '실제 검사 화면처럼 왼쪽 위에 <b>측정값 패널</b>을 올립니다. <code>dim</code> 함수는 패널 자리의 <b>ROI(<code>img(r)</code>)</b>를 잘라(03차시) 어두운 Mat 과 <code>addWeighted(roi, 0.30, dark, 0.70, 0, roi)</code> 로 섞어 <b>반투명 효과</b>를 냅니다 — ROI 가 원본 메모리를 가리키고 출력 크기 · 형식이 같아 새로 할당되지 않으므로 결과가 바로 이미지에 반영됩니다. 판정 줄만 색을 바꿔(OK = 초록, NG = 빨강) 한눈에 보이게 했습니다. <code>format</code> 에서 <code>%</code> 기호 자체는 <code>%%</code> 로 씁니다.',
-            expect: '' },
+            expect: 'Otsu 임계값 125, 면적 비율 15.13 %, 판정 OK' },
           { type: 'callout', kind: 'tip', title: '글자가 배경에 묻힐 때 쓰는 세 가지', html: '<ul><li><b>배경 상자</b>: getTextSize + <code>rectangle(..., FILLED)</code> (예제 3)</li><li><b>반투명 패널</b>: ROI + <code>addWeighted</code> (예제 4)</li><li><b>외곽선 글자</b>: 같은 글자를 <b>두꺼운 검정</b>(thickness 4~5)으로 먼저 쓰고, 그 위에 <b>얇은 흰색</b>(thickness 1~2)을 덧쓰면 어떤 배경에서도 읽힙니다.</li></ul>' },
           { type: 'h', text: '미니 프로젝트: 부품 12개에 번호 라벨 붙이기' },
           { type: 'image', src: 'images/coins_parts.png', caption: 'images/coins_parts.png — 어두운 배경 위 밝은 원형 부품 12개 (지름 3종: r=34 ×3, r=27 ×4, r=20 ×5)' },
           { type: 'code', title: '예제 5: coins_parts.png 에 번호 · 크기 라벨 붙여 저장', code: EX2_MINI,
             desc: '부품을 <b>찾는</b> 방법(HoughCircles · 윤곽선)은 12~13차시에서 배우므로, 지금은 <code>assets/IMAGES.md</code> 에 적힌 <b>정답 좌표 · 반지름을 vector 에 직접 넣어</b> 그립니다. 반지름으로 L · M · S 를 나누고, 크기마다 다른 색으로 원 · 십자 · 라벨을 그린 뒤 <code>imwrite</code> 로 저장합니다 (📁 작업 폴더에서 내려받아 보세요). 배율 0.1 mm/px 를 곱해 지름을 mm 로 표시하는 것까지가 실제 검사 화면의 모습입니다. <code>c.size()</code> 는 <code>size_t</code> 이므로 반복 변수도 <code>size_t</code> 로 썼습니다.',
-            expect: '' },
+            expect: '부품 12개 — L 3 · M 4 · S 5\n1번 라벨 배경 at(120, 87) = [60, 180, 255]\n저장: coins_labeled.png (📁 작업 폴더에서 내려받기)' },
           { type: 'h', text: '한글이 꼭 필요할 때 (로컬 전용)' },
           { type: 'code', title: '추가: freetype 모듈로 한글 그리기', code: EX2_FREETYPE, run: false, local: true, file: 'main.cpp',
             desc: 'opencv_contrib 의 <code>freetype</code> 모듈은 TTF 글꼴 파일로 글자를 그립니다. 공식 Windows 설치 패키지(<code>opencv-5.0.0-windows.exe</code>)에는 <b>들어 있지 않아</b> CMake 로 contrib 를 포함해 직접 빌드해야 하고 FreeType · HarfBuzz 라이브러리도 필요합니다. 그래서 실무에서는 이미지에는 영문 · 숫자만 새기고, 한글 안내는 GUI(MFC · Qt)나 로그로 보여 주는 경우가 대부분입니다.' },
@@ -933,7 +933,7 @@ int main()
             title: '라벨 상자로 부품 이름표 붙이기', level: 1,
             desc: '<code>images/washers.png</code> 를 3채널로 바꾼 뒤, <b>배경 상자가 있는 라벨</b>을 붙이는 <code>drawLabel</code> 함수를 완성해 세 부품에 이름표를 붙이세요: W1 노랑 · N2 초록 · B3 빨강. 라벨의 기준 위치(상자 왼쪽 아래)는 W1 (50, 40) · N2 (300, 190) · B3 (360, 350) 입니다. 확인용으로 각 상자의 <b>왼쪽 아래 안쪽</b> 픽셀 <code>(p.y - 3, p.x + 2)</code> 가 배경색으로 칠해졌는지 출력하세요.',
             hint: '① <code>int bl = 0; Size s = getTextSize(text, font, 0.5, 1, &amp;bl);</code> ② <code>Rect box(p.x, p.y - s.height - 8, s.width + 8, s.height + 8);</code> ③ <code>rectangle(img, box, color, FILLED);</code> ④ <code>putText(img, text, Point(box.x + 4, box.y + box.height - 4), font, 0.5, Scalar(20, 20, 20), 1, LINE_AA);</code>',
-            expect: '',
+            expect: '\'W1 washer\' 상자 안쪽 = [0, 255, 255]\n\'N2 nut\' 상자 안쪽 = [0, 255, 0]\n\'B3 bolt\' 상자 안쪽 = [0, 0, 255]',
             starter: `#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <string>
@@ -1000,7 +1000,7 @@ int main()
             title: '오른쪽 아래에 정렬된 검사 결과 쓰기', level: 2,
             desc: '<code>images/coins_parts.png</code> 를 3채널로 바꾼 뒤 <b>오른쪽 아래 모서리에 오른쪽 정렬</b>로 두 줄을 쓰세요: <code>"PARTS 12"</code> 와 <code>"JUDGE OK"</code>. 오른쪽 정렬은 <code>getTextSize</code> 로 폭을 재서 <code>x = img.cols - s.width - 12</code> 로 계산합니다. 두 번째 줄은 초록색, 폰트는 <code>FONT_HERSHEY_SIMPLEX</code> · scale 0.8 · 두께 2 로 하고, 확인용으로 각 줄의 <b>오른쪽 끝</b>(<code>x + s.width</code>)을 출력하세요 — 두 줄 모두 <code>640 − 12 = 628</code> 이면 정렬 성공입니다.',
             hint: '아래 줄부터 y 를 정하면 편합니다: 아래 줄 기준선 y = <code>img.rows - 16</code>, 위 줄은 그보다 <code>s.height + 14</code> 만큼 위. 글자가 잘 보이도록 두꺼운 검정(두께 5)으로 먼저 쓰고 그 위에 색 글자를 덧써도 좋습니다.',
-            expect: '',
+            expect: '\'JUDGE OK\' 오른쪽 끝 = 628\n\'PARTS 12\' 오른쪽 끝 = 628',
             starter: `#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <string>
@@ -1094,7 +1094,7 @@ int main()
     imshow("fonts", canvas);
     waitKey(0);
     return 0;
-}`, points: ['같은 scale 이라도 폰트마다 폭 · 높이가 다르다', '<code>int baseLine = 0;</code> → <code>&amp;baseLine</code> 으로 넘긴다', '검사 화면은 <code>FONT_HERSHEY_SIMPLEX</code> 가 기본', '브라우저의 getTextSize 값은 <b>근사값</b> (실제와 몇 px 차이)'], notes: '<p>출력을 함께 읽으며 PLAIN 이 가장 작은 것을 확인합니다. 브라우저의 숫자는 근사값이고 Visual Studio 에서는 조금 다르게 나온다는 점을 미리 알려 줍니다(실제 SIMPLEX 0.9: 199×19, baseLine 2). 💬 "글자를 화면 폭에 맞추려면?" — getTextSize 로 재서 scale 을 조절하거나 줄을 나눈다. (5분)</p>' },
+}`, points: ['같은 scale 이라도 폰트마다 폭 · 높이가 다르다', '<code>int baseLine = 0;</code> → <code>&amp;baseLine</code> 으로 넘긴다', '검사 화면은 <code>FONT_HERSHEY_SIMPLEX</code> 가 기본', '브라우저의 getTextSize 값은 <b>근사값</b> (실제와 몇 px 차이)'], notes: '<p>출력을 함께 읽으며 PLAIN 이 가장 작은 것을 확인합니다. 브라우저의 숫자는 근사값이고 Visual Studio 에서는 조금 다르게 나온다는 점을 미리 알려 줍니다. 💬 "글자를 화면 폭에 맞추려면?" — getTextSize 로 재서 scale 을 조절하거나 줄을 나눈다. (5분)</p>' },
           { layout: 'code', title: '예제 2: fontScale 과 글자 상자', code: `#include <opencv2/opencv.hpp>
 #include <iostream>
 using namespace cv;
@@ -1146,9 +1146,7 @@ int main()
 }`, points: ['크기 재기 → 상자(FILLED) → 글자 순서', 'org = <code>box.y + box.height - pad</code> (상자 왼쪽 아래)', '배경색과 <b>대비되는</b> 글자색', '한 번 만들어 두면 모든 차시에서 재사용'], notes: '<p>이 차시의 핵심 코드입니다. 학생들이 그대로 따라 쓰고 pad · scale 을 바꿔 보게 합니다. <code>const string&amp;</code> · <code>const Scalar&amp;</code> 로 받는 이유(복사 없이 읽기 전용) 도 짚어 줍니다. 💬 "글자색을 흰색으로 바꾸면?" — 밝은 상자에서 안 보인다 → 상자색에 맞춰 글자색을 고르는 습관. (6분)</p>' },
           { layout: 'two', title: '한글은 어떻게?', left: { title: '❌ OpenCV putText', bullets: ['Hershey <b>벡터 폰트</b>만 내장 (영문 · 숫자 · 기호)', '<code>putText(img, "양품", …)</code> → 물음표 · 이상한 기호', '오류는 안 나므로 놓치기 쉽다', '이미지에 새길 글자는 <b>영문 · 숫자</b>로: <code>OK</code>, <code>NG</code>, <code>AREA 12.34</code>'] }, right: { title: '✅ 대안', bullets: ['opencv_contrib <code>freetype</code> 모듈 — TTF 글꼴로 그리기 (직접 빌드 필요)', 'MFC · Qt 등 <b>GUI 의 글자 출력</b>을 이미지 창에 겹치기', '한글 안내는 <code>cout</code> · 로그 파일로', '역할 분담: 저장 이미지 = 영문 · 숫자, 화면 안내 = GUI'] }, notes: '<p>실제로 "양품" 을 putText 해 보여 주는 것이 가장 효과적입니다. 역할 분담을 정리: <b>저장할 이미지에 새기는 영문 · 숫자 = OpenCV, 화면용 한글 = GUI</b>. freetype 모듈은 공식 설치 패키지에 없어 직접 빌드해야 한다는 점도 알려 줍니다. (5분)</p>' },
           { layout: 'code', title: '예제 4: 결과 오버레이 패널', code: `#include <opencv2/opencv.hpp>
-#include <iostream>
 using namespace cv;
-using namespace std;
 
 int main()
 {
@@ -1156,16 +1154,16 @@ int main()
     cvtColor(gray, view, COLOR_GRAY2BGR);
     double th = threshold(gray, bin, 0, 255, THRESH_BINARY_INV | THRESH_OTSU);
     double ratio = 100.0 * countNonZero(bin) / bin.total();
-
     Rect panel(12, 12, 250, 82);
     Mat roi = view(panel);                                   // 원본을 가리키는 창
     Mat dark(roi.size(), CV_8UC3, Scalar(15, 15, 15));
     addWeighted(roi, 0.30, dark, 0.70, 0, roi);              // 반투명 배경
     rectangle(view, panel, Scalar(200, 200, 200), 1);
     Scalar white(255, 255, 255);
-    putText(view, format("OTSU TH : %.0f", th), Point(22, 40), FONT_HERSHEY_SIMPLEX, 0.5, white, 1);
-    putText(view, format("AREA    : %.2f %%", ratio), Point(22, 62), FONT_HERSHEY_SIMPLEX, 0.5, white, 1);
-    putText(view, "JUDGE   : OK", Point(22, 84), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+    int f = FONT_HERSHEY_SIMPLEX;
+    putText(view, format("OTSU TH : %.0f", th), Point(22, 40), f, 0.5, white, 1);
+    putText(view, format("AREA    : %.2f %%", ratio), Point(22, 62), f, 0.5, white, 1);
+    putText(view, "JUDGE   : OK", Point(22, 84), f, 0.5, Scalar(0, 255, 0), 1);
     imshow("panel", view);
     waitKey(0);
     return 0;
