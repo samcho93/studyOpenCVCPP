@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch15_Camera", "Ch15_Camera\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch16_ImageStudio", "Ch16_ImageStudio\Ch16_ImageStudio.vcxproj", "{BB325EDA-F92F-4E96-9B28-276265D317B2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ch17_Inspection", "Ch17_Inspection\Ch17_Inspection.vcxproj", "{04B8575D-A8BB-494C-88C6-40943388DA9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,10 @@ Global
 		{BB325EDA-F92F-4E96-9B28-276265D317B2}.Debug|x64.Build.0 = Debug|x64
 		{BB325EDA-F92F-4E96-9B28-276265D317B2}.Release|x64.ActiveCfg = Release|x64
 		{BB325EDA-F92F-4E96-9B28-276265D317B2}.Release|x64.Build.0 = Release|x64
+		{04B8575D-A8BB-494C-88C6-40943388DA9D}.Debug|x64.ActiveCfg = Debug|x64
+		{04B8575D-A8BB-494C-88C6-40943388DA9D}.Debug|x64.Build.0 = Debug|x64
+		{04B8575D-A8BB-494C-88C6-40943388DA9D}.Release|x64.ActiveCfg = Release|x64
+		{04B8575D-A8BB-494C-88C6-40943388DA9D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
