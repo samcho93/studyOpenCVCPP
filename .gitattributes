@@ -1,0 +1,13 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.sln text eol=crlf
+*.vcxproj text eol=crlf
+*.vcxproj.filters text eol=crlf
+*.props text eol=crlf
+*.png binary
+*.jpg binary
+*.wasm binary
+*.tar binary
+*.o binary
+runtime/opencv.js -diff
+runtime/clang/bundle.js -diff

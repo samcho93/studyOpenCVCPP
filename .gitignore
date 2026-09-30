@@ -1,0 +1,16 @@
+node_modules/
+__pycache__/
+*.pyc
+tools/.build/
+# Visual Studio
+.vs/
+x64/
+Debug/
+Release/
+*.user
+*.suo
+*.VC.db
+*.aps
+.DS_Store
+Thumbs.db
+tools/dbg*.mjs
