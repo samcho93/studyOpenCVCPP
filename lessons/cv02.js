@@ -1029,7 +1029,7 @@ int main()
           { type: 'p', html: 'OpenCV 함수는 잘못된 입력을 받으면 <code>cv::Exception</code> 예외를 던집니다. 잡지 않으면 프로그램이 즉시 종료되고(Visual Studio 에서는 “처리되지 않은 예외” 창), 잡으면 메시지를 보여 주고 계속 실행할 수 있습니다. <code>cv::Exception</code> 은 <code>std::exception</code> 을 상속하므로 <code>catch (const std::exception&amp; e)</code> 로도 잡힙니다.' },
           { type: 'code', title: '예제 4: 빈 Mat 을 cvtColor 에 넣으면?', code: EX_EXC,
             desc: '메시지 <code>OpenCV(5.0.0) …/color.cpp:199: error: (-215:Assertion failed) !_src.empty() in function \'cvtColor\'</code> 는 이렇게 읽습니다: <b>①</b> OpenCV 버전 · 소스 위치 <b>②</b> 오류 코드(<code>-215</code> = 조건 검사 실패) <b>③</b> <b>통과하지 못한 조건</b> <code>!_src.empty()</code> — “입력이 비어 있으면 안 된다” <b>④</b> 예외가 난 함수. 조건식을 읽으면 원인이 거의 보입니다.',
-            expect: "empty() = true\ncv::Exception 을 잡았습니다\n  code = -215\n  func = cvtColor\n  what = OpenCV(5.0.0) opencv/modules/imgproc/src/color.cpp:199: error: (-215:Assertion failed) !_src.empty() in function 'cvtColor'\n\n프로그램은 멈추지 않고 계속됩니다" },
+            expect: "empty() = true\ncv::Exception 을 잡았습니다\n  code = -215\n  func = cvtColor\n  what = OpenCV(5.0.0) opencv/modules/imgproc/src/color.cpp:199: error: (-215:Assertion failed) !_src.empty() in function 'cvtColor'\n프로그램은 멈추지 않고 계속됩니다" },
           { type: 'table', head: ['자주 보는 조건식', '뜻 · 원인'], rows: [
             ['<code>!_src.empty()</code> · <code>!_img.empty()</code>', '입력 Mat 이 비었다 → imread 경로 확인'],
             ['<code>scn == 3 || scn == 4</code> (cvtColor)', 'BGR→Gray 변환에 1채널이 들어왔다 → 이미 흑백'],
@@ -1329,14 +1329,14 @@ int main()
             desc: '<code>static_cast&lt;Mat*&gt;(userdata)</code> 로 <code>void*</code> 를 원래 형식으로 되돌립니다. 콜백은 <b>(x, y)</b> 를 주지만 <code>at</code> 은 <b>(y, x)</b> — 여기서도 순서에 주의! <code>flags</code> 로 Ctrl · Shift 가 눌렸는지 알 수 있습니다. <code>setMouseCallback</code> 은 창이 있어야 하므로 <code>namedWindow</code> 를 먼저 부릅니다.' },
           { type: 'code', title: '예제 4 (브라우저 버전): 정해 둔 좌표의 픽셀 값', code: EX_PIXELS,
             desc: '브라우저에서는 마우스 콜백 대신 <b>좌표 목록</b>으로 같은 처리를 합니다. <code>color_chart.png</code> 의 패치 k 는 왼쪽 위 (30 + 72·열, 42 + 72·행), 크기 60×60 이므로 중심은 +30 입니다. 결과 창의 이미지 위에 마우스를 올리면 나오는 값과 비교해 보세요 — 결과 창의 좌표 · 픽셀 표시가 바로 마우스 콜백으로 만든 기능입니다.',
-            expect: '(60, 72) B=58 G=81 R=133\n(60, 144) B=42 G=121 R=236\n(60, 288) B=226 G=246 R=255\n(420, 288) B=51 G=55 R=58' },
+            expect: '(60, 72) B=55 G=79 R=125\n(60, 144) B=38 G=117 R=228\n(60, 288) B=213 G=233 R=248\n(420, 288) B=50 G=54 R=58' },
           { type: 'h', text: '트랙바: 값을 드래그해서 바꾸기' },
           { type: 'p', html: '<code>createTrackbar(이름, 창 이름, &amp;변수, 최댓값, 콜백, userdata)</code> 는 창에 슬라이더를 붙입니다. 슬라이더를 움직이면 <b>변수 값이 바뀌고 콜백이 호출</b>되므로, 콜백 안에서 처리를 다시 하고 <code>imshow</code> 합니다. 임계값 · 커널 크기 같은 파라미터를 눈으로 보며 맞출 때 아주 유용합니다.' },
           { type: 'code', title: '로컬: 트랙바로 이진화 임계값 조절 (Visual Studio)', code: EX_TRACK_LOCAL, run: false, local: true, file: 'main.cpp',
             desc: '여러 데이터를 콜백에 넘겨야 하면 <b>구조체</b>로 묶어 그 주소를 userdata 로 넘깁니다. 트랙바를 만든 직후에는 콜백이 불리지 않으므로 <code>onThresh(value, &amp;d)</code> 를 한 번 직접 부릅니다. <code>getTrackbarPos("thresh", "binary")</code> 로 현재 값을 읽을 수도 있습니다.' },
           { type: 'code', title: '예제 5 (브라우저 버전): 임계값 목록으로 결과 보기', code: EX_TRACK_WEB,
             desc: '트랙바를 네 위치로 옮겼다고 가정하고 같은 창을 갱신합니다. 와셔 이미지는 밝은 백라이트 배경(약 241) 위의 어두운 부품(약 18)이라, 임계값이 부품과 배경 사이에 있는 동안은 흰 픽셀 비율이 거의 변하지 않다가 배경 밝기에 가까워지면 급격히 줄어듭니다 — 07차시 이진화의 예고편입니다.',
-            expect: '임계값  60 → 흰 픽셀  85.1 %\n임계값 120 → 흰 픽셀  84.1 %\n임계값 180 → 흰 픽셀  82.0 %\n임계값 230 → 흰 픽셀   5.6 %' },
+            expect: '임계값  60 → 흰 픽셀  86.1 %\n임계값 120 → 흰 픽셀  85.0 %\n임계값 180 → 흰 픽셀  83.8 %\n임계값 230 → 흰 픽셀  10.5 %' },
           { type: 'callout', kind: 'tip', title: '브라우저에서 익히고, Visual Studio 에서 완성', html: '마우스 · 트랙바가 없는 브라우저에서도 <b>처리 부분(콜백이 할 일)</b> 은 좌표 목록 · 값 목록 · cin 으로 똑같이 시험할 수 있습니다. 처리를 함수로 분리해 두면 <b>콜백은 그 함수를 부르기만</b> 하면 되므로 옮기기도 쉽습니다. 이것이 16차시 클래스 설계로 이어집니다.' },
           { type: 'callout', kind: 'tip', teacher: true, title: '수업 준비 · 평가', html: '<ul><li>교사 PC 의 Visual Studio 에 <b>키보드 뷰어 · 마우스 콜백 · 트랙바</b> 세 프로그램을 미리 빌드해 두고 시연합니다 (images 폴더를 프로젝트 폴더에 복사).</li><li>한글 창 제목이 깨지는 모습을 한 번 보여 주면 “창 이름은 영어” 규칙이 잘 기억됩니다.</li><li>평가 루브릭(뷰어 과제): ① empty() 검사와 오류 메시지 (2점) ② n/p 순환 인덱스가 범위를 벗어나지 않음 (3점) ③ s 키 저장과 번호 파일 이름 (2점) ④ ESC 종료 · destroyAllWindows (1점) ⑤ 키 처리를 함수로 분리 (2점).</li><li>💬 발문: “waitKey 를 지우면 왜 창이 안 보일까?” — 창을 그리는 일도 waitKey 가 한다.</li></ul>' }
         ],
@@ -1354,7 +1354,7 @@ int main()
             hint: '1교시 예제 3 의 <code>while (true) { … if (!(cin &gt;&gt; t) || t &lt; 0) break; … }</code> 구조를 그대로 씁니다. 비율 = <code>100.0 * countNonZero(binary) / binary.total()</code>.',
             stdin: '50\n300\n150\n-1\n',
             starter: P3_CIN_START, solution: P3_CIN_SOL,
-            expect: '임계값 (음수 = 끝): \n  임계값 50 → 흰 픽셀 14.4 %\n임계값 (음수 = 끝): \n  0~255 사이로 입력하세요\n임계값 (음수 = 끝): \n  임계값 150 → 흰 픽셀 11.4 %\n임계값 (음수 = 끝): \n끝'
+            expect: '임계값 (음수 = 끝): \n  임계값 50 → 흰 픽셀 9.2 %\n임계값 (음수 = 끝): \n  0~255 사이로 입력하세요\n임계값 (음수 = 끝): \n  임계값 150 → 흰 픽셀 7.9 %\n임계값 (음수 = 끝): \n끝'
           }
         ],
         quiz: QUIZ3,
@@ -1390,11 +1390,8 @@ int main()
     destroyAllWindows();
     return 0;
 }`, points: ['같은 창 <code>"viewer"</code> 를 계속 갱신', '<code>waitKey(400)</code>: 0.4초 표시 + 키 확인', '흑백 파일도 COLOR 로 읽어 색 글자'], notes: '<p>실행해 결과 창에서 이미지가 바뀌는 것을 봅니다. 실행 중 결과 창을 누르고 ESC 를 눌러 중단되는지 시도해 보게 합니다. (5분)</p>' },
-          { layout: 'code', title: '키 처리 함수 분리', code: `#include <opencv2/opencv.hpp>
-#include <iostream>
-using namespace cv;
+          { layout: 'code', title: '키 처리 함수 분리', code: `#include <iostream>
 using namespace std;
-
 bool handleKey(int key, int& index, int count)
 {
     switch (key)
@@ -1403,11 +1400,9 @@ bool handleKey(int key, int& index, int count)
     case 'p':           index = (index - 1 + count) % count; break;
     case 'g':           index = 0; break;
     case 'q': case 27:  return false;
-    default: break;
     }
     return true;
 }
-
 int main()
 {
     int index = 0;
@@ -1418,7 +1413,11 @@ int main()
     }
     return 0;
 }`, points: ['키가 어디서 오든(waitKey · 문자열 · cin) 같은 규칙', '<code>% count</code> 로 순환, <code>+ count</code> 로 음수 방지', '<code>int&amp; index</code>: 참조로 받아 바꿈'], notes: '<p>💬 “index 가 0 일 때 p 를 누르면 (0 - 1) % 4 는?” — C++ 에서는 -1! 그래서 + count. 참조 매개변수(int&amp;)를 복습합니다. (6분)</p>' },
-          { layout: 'code', title: '완성 뷰어 (Visual Studio)', code: `int main()
+          { layout: 'code', title: '완성 뷰어 (Visual Studio)', code: `#include <opencv2/opencv.hpp>
+#include <vector>
+using namespace cv;
+using namespace std;
+int main()
 {
     vector<string> files = { "images/sample_color.png", "images/washers.png" };
     int index = 0, saved = 0;
@@ -1460,14 +1459,14 @@ int main()
     }
     return 0;
 }`, points: ['<code>!(cin &gt;&gt; idx)</code>: 입력 실패 · 끝이면 종료', '범위 검사 후 <code>continue</code>', '<code>waitKey(1)</code>: 그리기만 하고 넘어감'], notes: '<p>편집기에서 실행하면 결과 창 아래 입력칸에 숫자를 직접 넣을 수 있습니다. 문자(abc)를 넣으면 어떻게 되는지 💬 — cin 실패 → 종료. (4분)</p>' },
-          { layout: 'two', title: '마우스 콜백 · 트랙바의 구조', left: { title: '🖱 setMouseCallback', code: `void onMouse(int event, int x, int y,
+          { layout: 'two', title: '마우스 콜백 · 트랙바의 구조', left: { title: '🖱 setMouseCallback', run: false, code: `void onMouse(int event, int x, int y,
              int flags, void* userdata)
 {
     if (event != EVENT_LBUTTONDOWN) return;
     Mat& img = *static_cast<Mat*>(userdata);
     Vec3b px = img.at<Vec3b>(y, x);  // (y, x)!
 }
-// main: setMouseCallback("w", onMouse, &img);` }, right: { title: '🎚 createTrackbar', code: `void onThresh(int pos, void* userdata)
+// main: setMouseCallback("w", onMouse, &img);` }, right: { title: '🎚 createTrackbar', run: false, code: `void onThresh(int pos, void* userdata)
 {
     AppData& d = *static_cast<AppData*>(userdata);
     threshold(d.gray, d.binary, pos, 255,
