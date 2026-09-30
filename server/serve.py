@@ -1,14 +1,14 @@
-﻿"""머신비전 웹 실습 강좌 — 로컬 · 교실용 웹 서버 (파이썬 3.8+ 표준 라이브러리만 사용)
+﻿"""C++ OpenCV 웹 실습 강좌 — 로컬 · 교실용 웹 서버 (파이썬 3.8+ 표준 라이브러리만 사용)
 
     python server/serve.py            # http://localhost:8080
     python server/serve.py --lan      # 같은 네트워크의 학생 PC 에서 접속 (교사 PC 주소 표시)
     python server/serve.py --port 9000
 
-- 강좌 파일(HTML · JS · 파이썬 호환 모듈 · 예제 파일)을 제공한다.
+- 강좌 파일(HTML · JS · WebAssembly 컴파일러 · OpenCV.js · 예제 이미지)을 제공한다.
 - 교차 출처 격리(COOP/COEP) 헤더를 붙여 localhost 에서 실행 중 input() 입력이 되게 한다.
 - HTTP 로 LAN 접속하면 브라우저가 SharedArrayBuffer 를 막으므로, 입력 · GUI 이벤트를 서버의
   채널 API(/api/chan/push · /api/chan/pull)로 전달한다.
-- 파이썬 코드는 서버가 아니라 각 학생의 브라우저에서 실행된다 (서버는 파일 제공 + 메시지 전달만).
+- C++ 코드는 서버가 아니라 각 학생의 브라우저에서 실행된다 (서버는 파일 제공 + 메시지 전달만).
 """
 import argparse
 import json
@@ -74,7 +74,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         u = urlparse(self.path)
         if u.path == '/api/health':
-            return self._json({'ok': True, 'chan': True, 'server': 'studyPython', 'python': sys.version.split()[0]})
+            return self._json({'ok': True, 'chan': True, 'server': 'studyOpenCVCPP', 'python': sys.version.split()[0]})
         if u.path == '/api/chan/pull':
             q = parse_qs(u.query)
             sid = q.get('sid', [''])[0]
