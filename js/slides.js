@@ -1,11 +1,11 @@
-/* 교사용 PPT 슬라이드 엔진: 16:9 슬라이드, C# 코드 편집·실행, 전체 화면, 교사 노트, 발표자 창, 타이머 */
+/* 교사용 PPT 슬라이드 엔진: 16:9 슬라이드, C++ 코드 편집·실행, 전체 화면, 교사 노트, 발표자 창, 타이머 */
 (function () {
   const { esc, highlightInline, fileName, makeEditor, codesOf } = window.JU;
-  const LANG_TAB = { cs: '💠 C#', xml: '🪟 XAML', xaml: '🪟 XAML', sh: '⌨ 터미널', json: 'JSON', txt: '텍스트' };
+  const LANG_TAB = { cpp: '⚙ C++', cmake: '🧰 CMake', xml: '🧰 XML', xaml: '🪟 XAML', sh: '⌨ 터미널', json: 'JSON', txt: '텍스트' };
   /** 슬라이드의 코드: {cs} 필드 또는 code+lang */
-  const slideCodes = (s, field) => (field ? codesOf(s, field) : (s.cs != null ? { cs: s.cs } : codesOf({ code: s.code, lang: s.lang })));
-  const pick = (codes) => (codes.cs != null ? 'cs' : codes.other ? codes.other.lang : 'cs');
-  const codeText = (codes, l) => (l === 'cs' ? codes.cs : codes.other ? codes.other.code : '');
+  const slideCodes = (s, field) => (field ? codesOf(s, field) : (s.cpp != null ? { cpp: s.cpp } : codesOf({ code: s.code, lang: s.lang })));
+  const pick = (codes) => (codes.cpp != null ? 'cpp' : codes.other ? codes.other.lang : 'cpp');
+  const codeText = (codes, l) => (l === 'cpp' ? codes.cpp : codes.other ? codes.other.code : '');
   const langTabs = (codes, cur) => `<span class="s-lang-chip">${LANG_TAB[cur] || cur || ''}</span>`;
   const $ = (id) => document.getElementById(id);
   const LAYOUT_NAME = { title: '제목', goals: '학습 목표', bullets: '개념', code: '코드', two: '비교', table: '표', diagram: '그림', quiz: '퀴즈', practice: '실습', summary: '정리', image: '사진' };
@@ -47,7 +47,7 @@
       this.host = $('stageHost');
       this.bar = $('deckBar');
       this.timer = { start: 0, acc: 0 };
-      this.channel = 'BroadcastChannel' in window ? new BroadcastChannel('cs-presenter') : null;
+      this.channel = 'BroadcastChannel' in window ? new BroadcastChannel('cv-presenter') : null;
       this.bind();
     }
 
@@ -90,7 +90,7 @@
       this.editor = null;
       const key = `${this.sec.id}@${this.index}`;
       const top = `<div class="s-top"><span class="s-ch">${esc(this.ch.no)}차시</span><span>${esc(this.ch.title)}</span><span class="spacer"></span><span>${esc(this.sec.title)}</span></div>`;
-      const foot = `<div class="s-foot"><span>💠 ${esc((window.CS_COURSE || {}).short || 'OpenCV · C#')}</span><span class="spacer"></span><span class="pg">${this.index + 1} / ${this.slides.length}</span></div>`;
+      const foot = `<div class="s-foot"><span>⚙ ${esc((window.CV_COURSE || {}).short || 'OpenCV · C++')}</span><span class="spacer"></span><span class="pg">${this.index + 1} / ${this.slides.length}</span></div>`;
       const title = `<h2 class="s-title">${s.title || ''}</h2>`;
       const lead = s.lead ? `<p class="s-lead">${s.lead}</p>` : '';
       let html = '';
@@ -103,7 +103,7 @@
             <h1>${s.title}</h1>
             ${s.subtitle ? `<div class="sub">${s.subtitle}</div>` : ''}
             <div class="meta"><span>⏱ ${this.sec.minutes || 50}분</span><span>🖼️ 슬라이드 ${this.slides.length}장</span></div>
-            <div class="deco">${esc(this.ch.icon || '💠')}</div>`;
+            <div class="deco">${esc(this.ch.icon || '⚙️')}</div>`;
           break;
         case 'goals':
           html = top + title + `<div class="s-body"><div class="s-goals${s.goals.length > 3 ? ' dense' : ''}">${s.goals.map((g) => `<div>${g}</div>`).join('')}</div>
@@ -119,7 +119,7 @@
         case 'code': {
           const codes = slideCodes(s);
           const cur = pick(codes);
-          const runnable = cur === 'cs' && s.run !== false && !s.local;
+          const runnable = cur === 'cpp' && s.run !== false && !s.local;
           html = top + title + lead + `<div class="s-body"><div class="s-code${s.points && s.points.length ? ' has-points' : ''}">
               <div class="s-editor">
                 <div class="s-editor-bar"><span class="fname">📄 ${esc(s.file || fileName(codeText(codes, cur) || '', cur))}</span>${langTabs(codes, cur)}${runnable ? '' : '<span class="s-lang-chip local">🖥 Visual Studio</span>'}
@@ -143,8 +143,8 @@
             let inner = '';
             if (c.bullets) inner += bulletsHtml(c.bullets, true);
             if (c.html) inner += `<div>${JU.scoped(c.html)}</div>`;
-            if (c.code) inner += `<pre class="s-static">${highlightInline(c.code, c.lang || 'cs')}</pre>`;
-            const runBtn = c.code && c.run !== false && (c.lang || 'cs') === 'cs' ? `<button class="btn ghost small" data-act="run-col" data-col="${i}" style="float:right;font-size:1.1cqw">▶ 실행</button>` : '';
+            if (c.code) inner += `<pre class="s-static">${highlightInline(c.code, c.lang || 'cpp')}</pre>`;
+            const runBtn = c.code && c.run !== false && (c.lang || 'cpp') === 'cpp' ? `<button class="btn ghost small" data-act="run-col" data-col="${i}" style="float:right;font-size:1.1cqw">▶ 실행</button>` : '';
             return `<div class="s-col"><h3>${runBtn}${c.title || ''}</h3>${inner}</div>`;
           };
           html = top + title + lead + `<div class="s-body"><div class="s-two">${col(s.left, 'left')}${col(s.right, 'right')}</div></div>` + foot;
@@ -253,7 +253,7 @@
       } else if (a === 'run-col') {
         const c = s[act.dataset.col];
         this.showConsole(true);
-        this.app.runCode(c.code, { label: `${s.title} · ${c.title || ''}`, lang: c.lang || 'cs' });
+        this.app.runCode(c.code, { label: `${s.title} · ${c.title || ''}`, lang: c.lang || 'cpp' });
       }
     }
 
@@ -481,7 +481,7 @@
       $('sGrid').onclick = () => this.toggleGrid();
       $('sDoc').onclick = () => this.app.setView('doc');
       $('sFull').onclick = () => this.toggleFull();
-      $('sPresenter').onclick = () => { window.open('presenter.html', 'cs-presenter', 'width=1100,height=720'); setTimeout(() => this.broadcast(), 800); };
+      $('sPresenter').onclick = () => { window.open('presenter.html', 'cv-presenter', 'width=1100,height=720'); setTimeout(() => this.broadcast(), 800); };
       $('timerBtn').onclick = () => this.timerToggle();
       $('timerReset').onclick = () => this.timerReset();
       $('consoleHideBtn').onclick = () => this.showConsole(false);

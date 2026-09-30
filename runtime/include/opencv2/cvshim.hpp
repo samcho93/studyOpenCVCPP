@@ -173,6 +173,9 @@ static inline int cvCeil(int v) { return v; }
 static inline bool cvIsNaN(double v) { return std::isnan(v); }
 static inline bool cvIsInf(double v) { return std::isinf(v); }
 float cubeRoot(float v);
+/** 형식 이름: typeToString(CV_8UC3) → "CV_8UC3", depthToString(CV_32F) → "CV_32F" */
+std::string typeToString(int type);
+const char* depthToString(int depth);
 float fastAtan2(float y, float x);
 
 namespace detail {

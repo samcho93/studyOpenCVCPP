@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "site",
+      "name": "cvcpp-site",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["server/serve.py", "--port", "8086"],
-      "port": 8086
+      "runtimeArgs": ["server/serve.py", "--port", "8093"],
+      "port": 8093
     }
   ]
 }

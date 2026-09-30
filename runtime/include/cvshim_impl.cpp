@@ -80,7 +80,6 @@ struct Call {
   }
   Call& run() {
     // 문자열은 keep 에 모은 뒤 포인터를 채운다 (vector 재할당 뒤에도 안전)
-    for (size_t k = 0; k + 2 < w.size(); k++) { (void)k; }
     std::vector<int32_t> ww = w;
     for (size_t k = 0; k < ww.size(); k++) {
       if (ww[k] == T_STR && k + 2 < ww.size() && ww[k + 1] < 0) { int idx = -1 - ww[k + 1]; ww[k + 1] = (int)(intptr_t)keep[idx].data(); k += 2; }
@@ -297,6 +296,11 @@ std::string getBuildInformation() {
   return "study-OpenCV C++ (browser): C++ API shim + " + c.retstr();
 }
 float cubeRoot(float v) { return std::cbrt(v); }
+const char* depthToString(int depth) {
+  static const char* d[] = { "CV_8U", "CV_8S", "CV_16U", "CV_16S", "CV_32S", "CV_32F", "CV_64F", "CV_16F" };
+  return depth >= 0 && depth < 8 ? d[depth] : "<invalid depth>";
+}
+std::string typeToString(int type) { return std::string(depthToString(CV_MAT_DEPTH(type))) + "C" + std::to_string(CV_MAT_CN(type)); }
 float fastAtan2(float y, float x) {
   float a = (float)(std::atan2((double)y, (double)x) * 180.0 / CV_PI);
   if (a < 0) a += 360.f;

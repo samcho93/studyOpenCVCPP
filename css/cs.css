@@ -1,22 +1,22 @@
-/* OpenCV · C# 강좌 추가 스타일: 언어 칩 · 이미지 창 · 확대 보기 · 작업 폴더 · WPF 안내 */
+/* OpenCV · C++ 강좌 추가 스타일: 언어 칩 · 이미지 창 · 확대 보기 · 작업 폴더 · Visual Studio 안내 */
 :root {
-  --accent: #6d3fd1;          /* C# · .NET 보라 */
-  --accent-soft: #efe9fb;
+  --accent: #00599c;          /* C++ 파랑 */
+  --accent-soft: #e3eef8;
   --accent2: #0e7490;         /* OpenCV 청록 */
   --accent2-soft: #e0f4f8;
-  --cs: #6d3fd1;
-  --cs-soft: #efe9fb;
+  --cs: #00599c;
+  --cs-soft: #e3eef8;
 }
 :root[data-theme="dark"] {
-  --accent: #a78bfa;
-  --accent-soft: #2a2247;
+  --accent: #5cb3ff;
+  --accent-soft: #14283d;
   --accent2: #38bdf8;
   --accent2-soft: #10283a;
-  --cs: #a78bfa;
-  --cs-soft: #2a2247;
+  --cs: #5cb3ff;
+  --cs-soft: #14283d;
 }
-.brand-logo { background: linear-gradient(135deg, #512bd4, #0e7490); box-shadow: 0 2px 8px rgba(81, 43, 212, .35); }
-.hero { background: radial-gradient(circle at 85% 20%, rgba(255, 255, 255, .18), transparent 40%), linear-gradient(135deg, #512bd4 0%, #3b2a8f 50%, #0e7490 100%); }
+.brand-logo { background: linear-gradient(135deg, #00599c, #0e7490); box-shadow: 0 2px 8px rgba(0, 89, 156, .35); }
+.hero { background: radial-gradient(circle at 85% 20%, rgba(255, 255, 255, .18), transparent 40%), linear-gradient(135deg, #00599c 0%, #004482 50%, #0e7490 100%); }
 
 /* ---------------------------------------------------------------- 네비 도구 */
 .nav-tools { display: flex; gap: 6px; margin: 0 0 8px; }
@@ -39,7 +39,7 @@
 .code-block .expect { border-top: 1px solid var(--line); }
 .cm-s-default .cm-keyword, .CodeMirror .cm-keyword { color: var(--tk-keyword); }
 
-/* ---------------------------------------------------------------- 콜아웃 (WPF · Visual Studio) */
+/* ---------------------------------------------------------------- 콜아웃 (Visual Studio 프로젝트) */
 .callout.wpf { border-left-color: #0078d4; background: color-mix(in srgb, #0078d4 7%, var(--card)); }
 .callout.wpf .ct { color: #0078d4; }
 :root[data-theme="dark"] .callout.wpf .ct { color: #60b4ff; }

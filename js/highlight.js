@@ -1,12 +1,12 @@
-/* 공용 유틸: HTML 이스케이프, 코드 정적 강조(CodeMirror runMode), 코드 편집기 — C# (+ XAML · 셸 · JSON 코드 조각) */
+/* 공용 유틸: HTML 이스케이프, 코드 정적 강조(CodeMirror runMode), 코드 편집기 — C++ (+ CMake · 셸 · XML 코드 조각) */
 (function () {
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   // 한 편집기에 여러 파일: # ===== File: 모듈.py =====  /  // ===== File: shape.hpp =====
   const FILE_MARK = /^\s*#\s*=+\s*(?:file|파일)\s*:\s*([\w./\-가-힣]+?\.\w+)\s*=*\s*$/i;
   const FILE_MARK_CPP = /^\s*\/\/\s*=+\s*(?:file|파일)\s*:\s*([\w./-]+?\.\w+)\s*=*\s*$/i;
-  const MODES = { cs: 'text/x-csharp', xml: 'application/xml', xaml: 'application/xml', sh: 'text/x-sh', ps: 'text/x-sh', txt: 'text/plain', json: 'application/json', py: 'text/x-python', cpp: 'text/x-c++src' };
-  const LANG_NAME = { cs: 'C#', xml: 'XAML', xaml: 'XAML', sh: '터미널', ps: 'PowerShell', txt: '텍스트', json: 'JSON', py: 'Python', cpp: 'C++' };
-  const modeOf = (lang) => MODES[lang] || MODES.cs;
+  const MODES = { cpp: 'text/x-c++src', cs: 'text/x-csharp', cmake: 'text/x-sh', xml: 'application/xml', xaml: 'application/xml', sh: 'text/x-sh', ps: 'text/x-sh', txt: 'text/plain', json: 'application/json', py: 'text/x-python' };
+  const LANG_NAME = { cpp: 'C++', cs: 'C#', cmake: 'CMake', xml: 'XML', xaml: 'XAML', sh: '터미널', ps: 'PowerShell', txt: '텍스트', json: 'JSON', py: 'Python' };
+  const modeOf = (lang) => MODES[lang] || MODES.cpp;
   const markOf = (lang) => (lang === 'py' || lang === 'sh' ? FILE_MARK : FILE_MARK_CPP);
 
   function runMode(code, lang, cb) {
@@ -15,7 +15,7 @@
   }
 
   /** 코드를 줄 단위 <span class="ln"> 로 강조한 HTML 로 만든다 */
-  function highlightLines(code, lang = 'cs') {
+  function highlightLines(code, lang = 'cpp') {
     code = String(code || '').replace(/\r\n/g, '\n').replace(/\s+$/, '');
     const lines = [];
     let cur = '';
@@ -38,7 +38,7 @@
   }
 
   /** 줄 번호 없이 강조만 */
-  function highlightInline(code, lang = 'cs') {
+  function highlightInline(code, lang = 'cpp') {
     code = String(code || '').replace(/\r\n/g, '\n').replace(/\s+$/, '');
     if (!(window.CodeMirror && CodeMirror.runMode)) return esc(code);
     let out = '';
@@ -49,10 +49,10 @@
   }
 
   /** 편집기 코드의 파일 이름 */
-  function fileName(code, lang = 'cs') {
+  function fileName(code, lang = 'cpp') {
     const f = markOf(lang).exec((code || '').split('\n')[0] || '');
     if (f) return f[1] + ' …';
-    return lang === 'cs' ? (/class\s+MainWindow|\.xaml\.cs|InitializeComponent/.test(code || '') ? 'MainWindow.xaml.cs' : 'Program.cs') : lang === 'xml' || lang === 'xaml' ? 'MainWindow.xaml' : lang === 'sh' || lang === 'ps' ? '터미널' : lang === 'json' ? 'settings.json' : '';
+    return lang === 'cpp' ? 'main.cpp' : lang === 'cmake' ? 'CMakeLists.txt' : lang === 'xml' || lang === 'xaml' ? '.vcxproj / .props' : lang === 'sh' || lang === 'ps' ? '터미널' : lang === 'json' ? 'settings.json' : '';
   }
 
   /** 대화형 모드(>>>) 예제: 입력한 줄 앞에 >>> / ... 표시 */
@@ -69,37 +69,37 @@
 
   /**
    * 코드 블록 · 슬라이드 · 실습의 코드 정리
-   * 입력 형식: 문자열(C#) 또는 { code, lang } 또는 { cs } / 실습은 starter · solution 필드
-   * @returns {{cs?:string, other?:{lang:string, code:string}}}
+   * 입력 형식: 문자열(C++) 또는 { code, lang } 또는 { cpp } / 실습은 starter · solution 필드
+   * @returns {{cpp?:string, other?:{lang:string, code:string}}}
    */
   function codesOf(obj, field) {
     if (obj == null) return {};
     const v = field ? obj[field] : obj;
     if (v == null) return {};
     if (typeof v === 'string') {
-      const lang = (field ? obj[field + 'Lang'] : null) || obj.lang || 'cs';
-      if (lang === 'cs') return { cs: v };
+      const lang = (field ? obj[field + 'Lang'] : null) || obj.lang || 'cpp';
+      if (lang === 'cpp') return { cpp: v };
       return { other: { lang, code: v } };
     }
     const out = {};
-    if (typeof v.cs === 'string') out.cs = v.cs;
+    if (typeof v.cpp === 'string') out.cpp = v.cpp;
     if (typeof v.code === 'string') {
-      const lang = v.lang || 'cs';
-      if (lang === 'cs') out.cs = v.code; else out.other = { lang, code: v.code };
+      const lang = v.lang || 'cpp';
+      if (lang === 'cpp') out.cpp = v.code; else out.other = { lang, code: v.code };
     }
     return out;
   }
-  /** 코드 블록(content type:'code')에서 코드: {cs} 또는 code+lang */
+  /** 코드 블록(content type:'code')에서 코드: {cpp} 또는 code+lang */
   function blockCodes(b) {
-    if (b.cs != null) return { cs: b.cs };
+    if (b.cpp != null) return { cpp: b.cpp };
     return codesOf({ code: b.code, lang: b.lang });
   }
-  /** expect: 문자열 (또는 {cs}) */
+  /** expect: 문자열 (또는 {cpp}) */
   function expectOf(obj, lang) {
     const e = obj && obj.expect;
     if (e == null) return null;
     if (typeof e === 'string') return e;
-    return e[lang || 'cs'] != null ? e[lang || 'cs'] : null;
+    return e[lang || 'cpp'] != null ? e[lang || 'cpp'] : null;
   }
 
   /**
@@ -107,7 +107,7 @@
    * @returns {{getValue, setValue, refresh, focus, markErrors, clearErrors, jump, on, setLang, lang}}
    */
   function makeEditor(host, value, opts = {}) {
-    let lang = opts.lang || 'cs';
+    let lang = opts.lang || 'cpp';
     if (window.CodeMirror) {
       const unit = () => 4;
       const cm = CodeMirror(host, {
@@ -137,7 +137,7 @@
       const api = {
         cm,
         get lang() { return lang; },
-        setLang(l) { lang = l || 'cs'; cm.setOption('mode', modeOf(lang)); },
+        setLang(l) { lang = l || 'cpp'; cm.setOption('mode', modeOf(lang)); },
         getValue: () => cm.getValue(),
         setValue: (v) => { cm.setValue(v || ''); cm.clearHistory(); },
         refresh: () => cm.refresh(),
@@ -211,8 +211,8 @@
     return `<div class="${cls}" style="display:contents">${out}</div>`;
   }
 
-  /** 언어: 이 강좌는 C# 하나 */
-  function getLang() { return 'cs'; }
+  /** 언어: 이 강좌는 C++ 하나 */
+  function getLang() { return 'cpp'; }
   function setLang() { /* 단일 언어 */ }
 
   window.JU = {

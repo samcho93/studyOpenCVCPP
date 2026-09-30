@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>발표자 창 · OpenCV C# 강좌</title>
+  <title>발표자 창 · OpenCV C++ 강좌</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗒️</text></svg>">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
   <style>
@@ -56,7 +56,7 @@
   </main>
   <footer><button id="prev">◀ 이전</button><button id="nextBtn">다음 ▶</button></footer>
   <script>
-    const ch = new BroadcastChannel('cs-presenter');
+    const ch = new BroadcastChannel('cv-presenter');
     const $ = (id) => document.getElementById(id);
     let limit = 50;
     ch.onmessage = (ev) => {

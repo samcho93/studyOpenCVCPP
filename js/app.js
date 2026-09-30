@@ -1,13 +1,13 @@
-/* OpenCV · C# WPF 웹 실습 강좌 — 메인 앱 (네비게이션 · 강좌 문서 · C# 에디터 · 진도 · 역할/보기 전환 · 작업 폴더) */
+/* OpenCV · C++ 웹 실습 강좌 — 메인 앱 (네비게이션 · 강좌 문서 · C++ 에디터 · 진도 · 역할/보기 전환 · 작업 폴더) */
 (function () {
   const { esc, highlightLines, makeEditor, blockCodes, codesOf, expectOf, LANG_NAME } = window.JU;
   const { store } = window.Runner;
-  const C = window.CS_COURSE;
-  const E = window.CsEngine;
+  const C = window.CV_COURSE;
+  const E = window.CvEngine;
   const $ = (id) => document.getElementById(id);
   const stripTags = (h) => String(h || '').replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim();
 
-  const app = { role: 'student', view: 'doc', route: { type: 'home' }, done: new Set(), blockCodes: {}, activeEditor: null, lang: 'cs' };
+  const app = { role: 'student', view: 'doc', route: { type: 'home' }, done: new Set(), blockCodes: {}, activeEditor: null, lang: 'cpp' };
   window.CsApp = app;
 
   // ================================================================== 초기화
@@ -87,24 +87,25 @@
   function setView(view) { app.view = view; render(); }
   app.setView = setView;
 
-  // ================================================================== 에디터 (C#)
-  const CS_TEMPLATE = `using System;
-using OpenCvSharp;
+  // ================================================================== 에디터 (C++)
+  const CS_TEMPLATE = `#include <opencv2/opencv.hpp>
+#include <iostream>
+using namespace cv;
+using namespace std;
 
-class Program
+int main()
 {
-    static void Main()
-    {
-        // 예제 이미지를 흑백으로 읽어 정보를 출력하고 창에 표시합니다
-        using var img = Cv2.ImRead("images/sample_gray.png", ImreadModes.Grayscale);
-        Console.WriteLine($"크기: {img.Width} x {img.Height}, 채널: {img.Channels()}, 형식: {img.Type()}");
-        Cv2.ImShow("image", img);
-        Cv2.WaitKey(0);
-    }
+    // 예제 이미지를 흑백으로 읽어 정보를 출력하고 창에 표시합니다
+    Mat img = imread("images/sample_gray.png", IMREAD_GRAYSCALE);
+    if (img.empty()) { cout << "이미지를 읽지 못했습니다" << endl; return -1; }
+    cout << "크기: " << img.cols << " x " << img.rows << ", 채널: " << img.channels() << ", 형식: " << img.type() << endl;
+    imshow("image", img);
+    waitKey(0);
+    return 0;
 }
 `;
   function setupEditor() {
-    app.editor = makeEditor($('editorHost'), '', { onRun: runEditor, lang: 'cs' });
+    app.editor = makeEditor($('editorHost'), '', { onRun: runEditor, lang: 'cpp' });
     app.editorState = { key: null, label: '', code: '' };
     app.editor.on('change', () => { const st = app.editorState; if (st.key) store.set(`jc.ed.${st.key}`, JSON.stringify({ code: app.editor.getValue(), label: st.label, orig: st.code })); });
     setEditorFont(+store.get('jc.edFont', 14.5));
@@ -143,7 +144,7 @@ class Program
   app.runCode = function (code, opts = {}) {
     app.activeEditor = opts.editor || null;
     if (app.deck && app.deck.isFull()) app.deck.showConsole(true);
-    if (opts.lang && opts.lang !== 'cs') { app.toast('이 코드 조각은 실행할 수 없습니다 (' + (LANG_NAME[opts.lang] || opts.lang) + ')'); return Promise.resolve({ ok: false }); }
+    if (opts.lang && opts.lang !== 'cpp') { app.toast('이 코드 조각은 실행할 수 없습니다 (' + (LANG_NAME[opts.lang] || opts.lang) + ')'); return Promise.resolve({ ok: false }); }
     return app.console.execute(code, { label: opts.label, stdin: opts.stdin, onDiagnostics: (d) => { if (opts.editor) opts.editor.markErrors(d); } });
   };
 
@@ -191,7 +192,7 @@ class Program
   function sectionText(s) {
     if (textCache.has(s.id)) return textCache.get(s.id);
     const parts = [s.title, ...(s.goals || [])];
-    (s.content || []).forEach((b) => parts.push(b.text || '', stripTags(b.html), b.title || '', (b.items || []).map(stripTags).join(' '), b.code || '', b.cs || '', (b.rows || []).flat().map(stripTags).join(' ')));
+    (s.content || []).forEach((b) => parts.push(b.text || '', stripTags(b.html), b.title || '', (b.items || []).map(stripTags).join(' '), b.code || '', b.cpp || '', (b.rows || []).flat().map(stripTags).join(' ')));
     (s.practice || []).forEach((p) => parts.push(p.title, stripTags(p.desc)));
     const t = parts.join(' ');
     textCache.set(s.id, t);
@@ -273,7 +274,7 @@ class Program
     const all = allSections();
     let nCode = 0, nSlides = 0, nPractice = 0, nQuiz = 0, nWpf = 0;
     all.forEach(({ sec }) => {
-      (sec.content || []).filter((b) => b.type === 'code').forEach((b) => { nCode++; if (b.local || (b.lang && b.lang !== 'cs')) nWpf++; });
+      (sec.content || []).filter((b) => b.type === 'code').forEach((b) => { nCode++; if (b.local || (b.lang && b.lang !== 'cpp')) nWpf++; });
       nSlides += (sec.slides || []).length; nPractice += (sec.practice || []).length; nQuiz += (sec.quiz || []).length;
     });
     const last = store.get('jc.last', '');
@@ -282,20 +283,20 @@ class Program
     const teacher = app.role === 'teacher';
     $('content').innerHTML = `<div class="doc">
       <div class="hero">
-        <h1>💠 ${esc(C.title)}</h1>
-        <p><b>C#</b> 과 <b>WPF</b> 로 OpenCV 를 배우는 실습 강좌입니다. Visual Studio 에서 <b>NuGet 으로 OpenCvSharp4 를 설치</b>하는 것부터 시작해
+        <h1>⚙ ${esc(C.title)}</h1>
+        <p><b>C++</b> 로 <b>OpenCV 5.0</b> 을 배우는 실습 강좌입니다. <b>Visual Studio 에 OpenCV 를 설치 · 설정</b>하는 것부터 시작해
           Mat · 색 공간 · 이진화 · 필터 · 모폴로지 · 에지 · 기하 변환 · 윤곽선 · 허프 변환 · 템플릿 매칭 · 카메라까지 익히고,
-          마지막에는 <b>WPF 이미지 처리 앱</b>과 <b>검사 프로젝트</b>를 완성합니다.</p>
-        <p>모든 OpenCvSharp 예제는 <b>이 페이지 안에서 바로 실행 · 수정</b>할 수 있습니다 (브라우저 안의 C# 인터프리터 + OpenCV 4.13). WPF 화면 코드는 Visual Studio 용 프로젝트로 제공합니다.</p>
-        <p>차시 ${chs.length}개 · 교시 ${all.length}개 · 예제 ${nCode}개(WPF ${nWpf}) · 실습 ${nPractice}개 · 퀴즈 ${nQuiz}문항 · 슬라이드 ${nSlides}장</p>
+          마지막에는 <b>이미지 처리 도구</b>와 <b>실전 검사 프로젝트</b>를 완성합니다.</p>
+        <p>모든 C++ 예제는 <b>이 페이지 안에서 바로 컴파일 · 실행 · 수정</b>할 수 있습니다 (브라우저 안의 Clang C++ 컴파일러 + OpenCV 5.0). 완성 프로젝트는 Visual Studio 솔루션(<code>vs/</code>)으로도 제공합니다.</p>
+        <p>차시 ${chs.length}개 · 교시 ${all.length}개 · 예제 ${nCode}개(로컬 전용 ${nWpf}) · 실습 ${nPractice}개 · 퀴즈 ${nQuiz}문항 · 슬라이드 ${nSlides}장</p>
         <div class="hero-actions">
           ${lastF ? `<a class="btn" href="#${lastF.sec.id}">⏯ 이어서 학습: ${esc(lastF.sec.title)}</a>` : ''}
           ${first ? `<a class="btn${lastF ? ' outline' : ''}" href="#${first.sec.id}">▶ 처음부터 시작</a>` : ''}
-          <a class="btn outline" href="${ghUrl('wpf')}" target="_blank" rel="noopener">🪟 WPF 예제 프로젝트</a>
+          <a class="btn outline" href="${ghUrl('vs')}" target="_blank" rel="noopener">🧰 Visual Studio 예제 솔루션</a>
           <button class="btn outline" data-open-files>📁 작업 폴더 · 예제 이미지</button>
           <button class="btn outline" data-role-go="${teacher ? 'student' : 'teacher'}">${teacher ? '🎓 학생용 화면으로' : '🧑‍🏫 교사용(PPT) 화면으로'}</button>
         </div>
-        <div class="cup">💠</div>
+        <div class="cup">⚙</div>
       </div>
 
       ${(C.parts || []).map((p) => {
@@ -317,22 +318,22 @@ class Program
         <tbody>
           <tr><td>기본 화면</td><td>문서형 강좌 (개념 · 그림 → 예제 → 실습 → 퀴즈)</td><td>PPT 형태 슬라이드 (16:9) + 교사 노트</td></tr>
           <tr><td>코드 실행</td><td>예제의 <b>▶ 실행</b>, 아래 편집기에서 <kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>코드 슬라이드에서 직접 수정하고 <b>▶ 실행</b></td></tr>
-          <tr><td>실행 결과</td><td colspan="2">오른쪽 <b>결과 창</b>에 <code>Console.WriteLine</code> 출력 · 오류 · <b>이미지 창(<code>Cv2.ImShow</code>)</b>. 이미지에 마우스를 올리면 <b>좌표와 픽셀 값(B, G, R)</b>, 누르면 확대 보기.</td></tr>
+          <tr><td>실행 결과</td><td colspan="2">오른쪽 <b>결과 창</b>에 <code>cout</code> 출력 · 컴파일 오류 · <b>이미지 창(<code>imshow</code>)</b>. 이미지에 마우스를 올리면 <b>좌표와 픽셀 값(B, G, R)</b>, 누르면 확대 보기.</td></tr>
           <tr><td>예제 이미지</td><td colspan="2">합성 예제 이미지(부품 트레이 · 와셔 · 동전 · PCB · 병 · 색 뚜껑 …)가 <code>images/</code> 폴더에 있습니다. <b>📁 작업 폴더</b>에서 보고, 내 이미지도 올릴 수 있습니다.</td></tr>
-          <tr><td>카메라</td><td colspan="2"><code>new VideoCapture(0)</code> 은 브라우저에서 <b>컨베이어 시뮬레이션 영상</b>으로 동작합니다. 실제 웹캠은 WPF 프로젝트에서 같은 코드로 씁니다.</td></tr>
-          <tr><td>WPF</td><td colspan="2">XAML · WPF 화면 코드는 브라우저에서 실행하지 않습니다(<span class="chip local-chip" style="font-size:11px">🖥 Visual Studio 에서 실행</span> 표시). <a href="${ghUrl('wpf')}" target="_blank" rel="noopener">wpf/</a> 폴더의 프로젝트를 열어 실행하세요.</td></tr>
-          <tr><td>추가 기능</td><td>진도 저장, 검색, 슬라이드 보기, .cs 내려받기</td><td>수업 흐름 · 퀴즈 정답 · 실습 정답 실행 · 판서 · 타이머 · 발표자 창 · 전체 화면</td></tr>
+          <tr><td>카메라</td><td colspan="2"><code>VideoCapture cap(0)</code> 은 브라우저에서 <b>컨베이어 시뮬레이션 영상</b>으로 동작합니다. 실제 웹캠은 Visual Studio 에서 같은 코드로 씁니다.</td></tr>
+          <tr><td>Visual Studio</td><td colspan="2">마우스 콜백 · 트랙바 · 실제 카메라 · 동영상 파일 · DNN 같은 코드는 브라우저에서 실행하지 않습니다(<span class="chip local-chip" style="font-size:11px">🖥 Visual Studio 에서 실행</span> 표시). <a href="${ghUrl('vs')}" target="_blank" rel="noopener">vs/</a> 폴더의 솔루션을 열어 실행하세요.</td></tr>
+          <tr><td>추가 기능</td><td>진도 저장, 검색, 슬라이드 보기, .cpp 내려받기</td><td>수업 흐름 · 퀴즈 정답 · 실습 정답 실행 · 판서 · 타이머 · 발표자 창 · 전체 화면</td></tr>
         </tbody></table></div>
       <ul class="steps">
         <li><b>교시 선택</b> — 왼쪽 목차에서 차시와 교시를 고릅니다. 상단의 📄 문서 / 🖼️ 슬라이드 버튼으로 보기를 바꿉니다.</li>
         <li><b>코드 실행</b> — 예제의 <b>▶ 실행</b>을 누르면 아래 편집기로 코드가 들어가고 오른쪽 결과 창에 출력과 이미지가 나옵니다. 값을 바꿔 다시 실행해 보세요.</li>
-        <li><b>Visual Studio 로 옮기기</b> — 편집기의 <b>⬇ .cs</b> 로 코드를 내려받아 콘솔 프로젝트의 Program.cs 에 붙이면 로컬 PC 의 OpenCvSharp 에서 그대로 동작합니다 (01차시 참고).</li>
+        <li><b>Visual Studio 로 옮기기</b> — 편집기의 <b>⬇ .cpp</b> 로 코드를 내려받아 OpenCV 를 설정한 콘솔 프로젝트의 main.cpp 에 붙이면 로컬 PC 의 OpenCV 5.0 에서 그대로 동작합니다 (01차시 참고).</li>
         <li><b>교사용 수업</b> — 🧑‍🏫 교사용으로 바꾸면 슬라이드가 열립니다. <kbd>F</kbd> 전체 화면, <kbd>←</kbd> <kbd>→</kbd> 이동, <kbd>R</kbd> 결과 패널, <kbd>G</kbd> 목록, <kbd>N</kbd> 노트, <kbd>B</kbd> 검은 화면.</li>
       </ul>
       <div class="callout info"><div class="ct">ℹ️ 실행 환경 <span id="homeEnv" class="muted" style="font-weight:600">준비 전</span></div><div>
-        <p>💠 <b>C#</b>: 브라우저 안의 <b>C# 인터프리터</b>가 OpenCvSharp4 와 같은 이름의 API(<code>Cv2.*</code>, <code>Mat</code>, <code>Scalar</code>, <code>Point</code> …)를 <a href="https://docs.opencv.org/4.x/d5/d10/tutorial_js_root.html" target="_blank" rel="noopener">OpenCV.js 4.13</a> 위에서 실행합니다. 처음 실행할 때 OpenCV(약 11MB)를 한 번 내려받습니다.</p>
-        <p>지원 범위: C# 문법의 대부분(클래스 · 제네릭 컬렉션 · LINQ · 람다 · 예외 · 튜플 · 패턴 매칭)과 OpenCvSharp 의 핵심 API(core · imgproc · features2d · video · QR). 지원하지 않는 것: WPF/WinForms 화면, 스레드, 파일 대화상자, 일부 모듈(dnn · ml · calib3d).</p>
-        <p>🖥 <b>로컬 PC</b>: Visual Studio 2022 + .NET 8 + NuGet <code>OpenCvSharp4</code> · <code>OpenCvSharp4.runtime.win</code> · <code>OpenCvSharp4.WpfExtensions</code> — 01차시에서 설치합니다. 강좌 코드는 그대로 동작합니다.</p>
+        <p>⚙ <b>C++</b>: 브라우저 안의 <b>Clang C++ 컴파일러</b>(WebAssembly)가 코드를 진짜로 컴파일합니다. <code>#include &lt;opencv2/opencv.hpp&gt;</code> 의 <code>cv::Mat</code> · <code>Point</code> · <code>Rect</code> 등은 C++ 클래스로 그대로 동작하고, 알고리즘(<code>cvtColor</code> · <code>threshold</code> · <code>findContours</code> …)은 <a href="https://docs.opencv.org/5.x/" target="_blank" rel="noopener">OpenCV.js 5.0</a> 이 계산합니다. 처음 실행할 때 컴파일러(약 110MB)와 OpenCV.js(약 16MB)를 한 번 내려받습니다.</p>
+        <p>지원 범위: C++17 표준 라이브러리 전체(vector · string · map · algorithm · 람다 · 예외 · 템플릿)와 OpenCV 의 핵심 API(core · imgproc · imgcodecs · highgui · videoio · features · geometry · video · objdetect QR). 지원하지 않는 것: 마우스 콜백 · 트랙바, 스레드, 실제 카메라 · 동영상 파일, dnn · ml · 카메라 보정.</p>
+        <p>🖥 <b>로컬 PC</b>: Visual Studio 2022(또는 2026) 「C++를 사용한 데스크톱 개발」 + OpenCV 5.0.0 Windows 패키지(<code>opencv-5.0.0-windows.exe</code>) — 01차시에서 설치 · 설정합니다. 강좌 코드는 그대로 동작합니다.</p>
       </div></div>
     </div>`;
     updateEnvText();
@@ -351,7 +352,7 @@ class Program
       <div class="meta-row">
         <a class="btn primary" href="#${ch.sections[0].id}">▶ 첫 교시 시작</a>
         <button class="btn" data-slides="${ch.sections[0].id}">🖼️ 슬라이드로 수업</button>
-        ${ch.wpf ? `<a class="btn" href="${ghUrl('wpf/' + ch.wpf)}" target="_blank" rel="noopener">🪟 WPF 프로젝트: ${esc(ch.wpf)}</a>` : ''}
+        ${ch.vs ? `<a class="btn" href="${ghUrl('vs/' + ch.vs)}" target="_blank" rel="noopener">🧰 Visual Studio 프로젝트: ${esc(ch.vs)}</a>` : ''}
       </div>
       <h2>교시 구성</h2>
       <div class="sec-list">${ch.sections.map((s, i) => `<a class="sec-item" href="#${s.id}"><span class="sn">${i + 1}</span>
@@ -362,28 +363,28 @@ class Program
   }
 
   // ------------------------------------------------------------------ 코드 블록
-  const canRun = (b, codes) => codes.cs != null && b.run !== false && !b.local;
+  const canRun = (b, codes) => codes.cpp != null && b.run !== false && !b.local;
   /**
    * @param b  {code|cs, lang, title, desc, expect, stdin, run, local, file}
    */
   function codeBlockHtml(b, id, opts = {}) {
     const codes = blockCodes(b);
-    const lang = codes.cs != null ? 'cs' : codes.other ? codes.other.lang : 'cs';
-    const code = codes.cs != null ? codes.cs : codes.other ? codes.other.code : '';
+    const lang = codes.cpp != null ? 'cpp' : codes.other ? codes.other.lang : 'cpp';
+    const code = codes.cpp != null ? codes.cpp : codes.other ? codes.other.code : '';
     const tag = opts.tag ? `<span class="tag">${esc(opts.tag)}</span>` : '';
     const fname = b.title ? esc(b.title) : esc(b.file || window.JU.fileName(code, lang));
     const runnable = canRun(b, codes);
     const chip = `<span class="chip lang-chip">${esc(LANG_NAME[lang] || lang)}${b.file ? ' · ' + esc(b.file) : ''}</span>`;
-    const localChip = b.local || (lang !== 'cs' && lang !== 'sh' && lang !== 'json' && lang !== 'txt') ? '<span class="chip local-chip" title="WPF · 데스크톱 전용 코드: Visual Studio 에서 실행">🖥 Visual Studio 에서 실행</span>' : '';
+    const localChip = b.local || (lang !== 'cpp' && lang !== 'sh' && lang !== 'json' && lang !== 'txt') ? '<span class="chip local-chip" title="데스크톱 전용 코드: Visual Studio 에서 실행">🖥 Visual Studio 에서 실행</span>' : '';
     const stdin = b.stdin ? `<div class="stdin-hint">⌨ 입력이 필요한 예제입니다. 예: <code>${esc(b.stdin.replace(/\n$/, '').replace(/\n/g, ' ⏎ '))}</code>
       ${runnable ? `<button class="btn small ghost" data-code-act="run-stdin" data-code="${id}">예시 입력으로 실행</button>` : ''}</div>` : '';
-    const ex = expectOf(b, 'cs');
+    const ex = expectOf(b, 'cpp');
     const expect = ex != null && !b.nondeterministic && !opts.noExpect ? `<details class="expect"><summary>실행 결과 예시</summary><pre class="term">${esc(String(ex).replace(/\s+$/, ''))}</pre></details>` : '';
-    const nr = !runnable && lang === 'cs' ? `<div class="norun-note">${b.local ? '🖥 이 코드는 WPF 창 · 파일 대화상자 · 실제 카메라 등이 필요해 <b>Visual Studio</b> 에서 실행합니다.' : '이 코드는 브라우저에서 실행하지 않는 코드 조각입니다.'}</div>` : (lang === 'xml' || lang === 'xaml') ? '<div class="norun-note">🪟 XAML 은 WPF 프로젝트의 화면 정의 파일입니다 — Visual Studio 디자이너에서 확인하세요.</div>' : '';
+    const nr = !runnable && lang === 'cpp' ? `<div class="norun-note">${b.local ? '🖥 이 코드는 마우스 · 트랙바 · 실제 카메라 · 프로젝트 설정 등이 필요해 <b>Visual Studio</b> 에서 실행합니다.' : '이 코드는 브라우저에서 실행하지 않는 코드 조각입니다.'}</div>` : (lang === 'xml' || lang === 'cmake') ? '<div class="norun-note">🧰 Visual Studio · CMake 프로젝트 설정 파일입니다 — 로컬 PC 에서 사용합니다.</div>' : '';
     return `<div class="code-block single lang-${esc(lang)}" id="cb-${id}">
       <div class="code-head"><span class="t">${tag}${fname}</span>${chip}${localChip}
         ${runnable ? `<button class="btn small primary" data-code-act="run" data-code="${id}" title="편집기로 불러와 실행">▶ 실행</button>` : ''}
-        ${lang === 'cs' ? `<button class="btn small ghost" data-code-act="edit" data-code="${id}" title="아래 편집기로 불러오기">✎ 편집기로</button>` : ''}
+        ${lang === 'cpp' ? `<button class="btn small ghost" data-code-act="edit" data-code="${id}" title="아래 편집기로 불러오기">✎ 편집기로</button>` : ''}
         <button class="btn small ghost" data-code-act="copy" data-code="${id}" title="코드 복사">⧉</button></div>
       <div class="code-pane" data-lang="${esc(lang)}"><pre>${highlightLines(code, lang)}</pre>${nr}${expect}</div>${stdin}
       ${b.desc ? `<div class="code-desc">${b.desc}</div>` : ''}</div>`;
@@ -408,23 +409,23 @@ class Program
         case 'table': return `<div class="table-wrap"><table><thead><tr>${(b.head || []).map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${(b.rows || []).map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${b.caption ? `<p class="caption">${b.caption}</p>` : ''}`;
         case 'code': {
           const codes = blockCodes(b);
-          const code = codes.cs != null ? codes.cs : codes.other ? codes.other.code : '';
-          const lang = codes.cs != null ? 'cs' : codes.other ? codes.other.lang : 'cs';
+          const code = codes.cpp != null ? codes.cpp : codes.other ? codes.other.code : '';
+          const lang = codes.cpp != null ? 'cpp' : codes.other ? codes.other.lang : 'cpp';
           const id = reg(code, b.title, b.stdin, { lang, block: b });
           if (!firstCode && canRun(b, codes)) firstCode = { code, title: b.title };
           // 제목이 이미 "예제 …" / "추가: …" 로 시작하면 같은 말을 칩으로 또 붙이지 않는다
           return codeBlockHtml(b, id, { tag: b.title && !/^(예제|추가)/.test(b.title) && /더 알아보기/.test(b.title) ? '추가' : '' });
         }
         case 'callout': {
-          const icon = { tip: '💡', warn: '⚠️', info: 'ℹ️', more: '📘', field: '🏭', wpf: '🪟', vs: '🧰' }[b.kind] || 'ℹ️';
-          const title = b.title || { tip: '팁', warn: '주의', info: '참고', more: '더 알아보기', field: '현장 노트', wpf: 'WPF 에서는', vs: 'Visual Studio' }[b.kind];
+          const icon = { tip: '💡', warn: '⚠️', info: 'ℹ️', more: '📘', field: '🏭', wpf: '🧰', vs: '🧰', cs: '💠' }[b.kind] || 'ℹ️';
+          const title = b.title || { tip: '팁', warn: '주의', info: '참고', more: '더 알아보기', field: '현장 노트', wpf: 'Visual Studio 에서는', vs: 'Visual Studio', cs: 'Python · C# 과 비교' }[b.kind];
           return `<div class="callout ${esc(b.kind)}"><div class="ct">${icon} ${b.kind === 'more' && b.title ? '더 알아보기 · ' + b.title : title}</div><div>${window.JU.scoped(b.html)}</div></div>`;
         }
         case 'figure': return `<div class="figure">${window.JU.scoped(b.html)}${b.caption ? `<p class="caption">${b.caption}</p>` : ''}</div>`;
         case 'image': return `<div class="figure"><img class="asset-img" src="assets/${esc(b.src)}" alt="${esc(b.caption || b.src)}" data-zoom-src="assets/${esc(b.src)}" style="${b.width ? `max-width:${b.width}px` : ''}">${b.caption ? `<p class="caption">${b.caption}</p>` : ''}</div>`;
         case 'demo': { const di = demos.push(b) - 1; return `<div class="demo" data-demo="${di}"><div class="demo-title">${esc(b.title || '체험')}</div>${b.desc ? `<p class="demo-desc">${b.desc}</p>` : ''}<div class="demo-host">${b.html || ''}</div></div>`; }
-        case 'wpf': return `<div class="callout wpf"><div class="ct">🪟 ${esc(b.title || 'WPF 프로젝트에서 해 보기')}</div><div>${window.JU.scoped(b.html || '')}
-            ${b.project ? `<div class="meta-row"><a class="btn small primary" href="${ghUrl('wpf/' + b.project)}" target="_blank" rel="noopener">🪟 GitHub 에서 프로젝트 보기 · ${esc(b.project)}</a></div>` : ''}</div></div>`;
+        case 'wpf': case 'project': return `<div class="callout wpf"><div class="ct">🧰 ${esc(b.title || 'Visual Studio 프로젝트에서 해 보기')}</div><div>${window.JU.scoped(b.html || '')}
+            ${b.project ? `<div class="meta-row"><a class="btn small primary" href="${ghUrl('vs/' + b.project)}" target="_blank" rel="noopener">🧰 GitHub 에서 프로젝트 보기 · ${esc(b.project)}</a></div>` : ''}</div></div>`;
         default: return b.html ? `<div>${b.html}</div>` : '';
       }
     };
@@ -432,12 +433,12 @@ class Program
 
     const practice = (sec.practice || []).map((p, i) => {
       const st = codesOf(p, 'starter'), so = codesOf(p, 'solution');
-      const stCode = st.cs != null ? st.cs : '', soCode = so.cs != null ? so.cs : null;
+      const stCode = st.cpp != null ? st.cpp : '', soCode = so.cpp != null ? so.cpp : null;
       const sid = reg(stCode, p.title + ' (시작 코드)', p.stdin);
       const solId = soCode != null ? reg(soCode, p.title + ' (정답)', p.stdin) : null;
       const lv = '★'.repeat(p.level || 1) + '☆'.repeat(3 - (p.level || 1));
-      const ex = expectOf(p, 'cs');
-      return `<div class="practice single"><div class="practice-head"><b>🛠️ ${esc(p.title)}</b><span class="muted" style="font-size:12.5px">💠 C#</span><span class="level" title="난이도">${lv}</span></div>
+      const ex = expectOf(p, 'cpp');
+      return `<div class="practice single"><div class="practice-head"><b>🛠️ ${esc(p.title)}</b><span class="muted" style="font-size:12.5px">⚙ C++</span><span class="level" title="난이도">${lv}</span></div>
         <div class="practice-body">${p.desc || ''}
           ${p.stdin ? `<p class="muted" style="font-size:13px">⌨ 입력 예: <code>${esc(p.stdin.replace(/\n$/, '').replace(/\n/g, ' ⏎ '))}</code></p>` : ''}
           ${ex != null && !p.nondeterministic ? `<details><summary>기대 출력 보기</summary><pre class="term" style="background:var(--term-bg);color:var(--term-fg);padding:10px 14px;border-radius:8px;white-space:pre-wrap">${esc(String(ex).replace(/\s+$/, ''))}</pre></details>` : ''}
@@ -462,7 +463,7 @@ class Program
       <div class="meta-row"><span class="chip">⏱ ${sec.minutes || 50}분</span><span class="chip">💻 예제 ${nCode}</span>
         <span class="chip">🛠️ 실습 ${(sec.practice || []).length}</span><span class="chip">❓ 퀴즈 ${(sec.quiz || []).length}</span>
         <button class="btn small ghost" data-slides="${sec.id}">🖼️ 슬라이드로 보기</button>
-        ${ch.wpf ? `<a class="btn small ghost" href="${ghUrl('wpf/' + ch.wpf)}" target="_blank" rel="noopener">🪟 WPF 프로젝트</a>` : ''}
+        ${ch.vs ? `<a class="btn small ghost" href="${ghUrl('vs/' + ch.vs)}" target="_blank" rel="noopener">🧰 VS 프로젝트</a>` : ''}
         ${teacher ? '<button class="btn small ghost" id="showAllAnswers">🔑 퀴즈 정답 모두 보기</button>' : ''}</div>
       ${(sec.goals || []).length ? `<div class="goals"><b>🎯 학습 목표</b><ul>${sec.goals.map((g) => `<li>${g}</li>`).join('')}</ul></div>` : ''}
       ${flow}
@@ -512,14 +513,14 @@ class Program
   function updateEnvText() {
     const el = $('homeEnv');
     if (!el) return;
-    el.textContent = E.state === 'ready' ? `C# + OpenCV ${E.opencv} 준비 완료 (${(E.loadMs / 1000).toFixed(1)}초)` : E.state === 'loading' ? (E.message || '준비 중…') : E.state === 'error' ? '준비 실패 — ' + E.message : '처음 실행할 때 준비합니다';
+    el.textContent = E.state === 'ready' ? `C++ 컴파일러 + OpenCV ${E.opencv} 준비 완료 (${(E.loadMs / 1000).toFixed(1)}초)` : E.state === 'loading' ? (E.message || '준비 중…') : E.state === 'error' ? '준비 실패 — ' + E.message : '처음 실행할 때 준비합니다';
   }
   function setupServerBadge() {
     const upd = () => {
       const b = $('serverBtn');
       b.classList.toggle('ok', E.state === 'ready');
       b.classList.toggle('bad', E.state === 'error');
-      $('serverText').textContent = E.state === 'ready' ? `💠 C# · OpenCV ${E.opencv} 준비 완료` : E.state === 'loading' ? `💠 ${E.message || '준비 중…'}` : E.state === 'error' ? '💠 실행 환경 오류 (눌러서 확인)' : '💠 C# (실행하면 준비)';
+      $('serverText').textContent = E.state === 'ready' ? `⚙ C++ · OpenCV ${E.opencv} 준비 완료` : E.state === 'loading' ? `⚙ ${E.message || '준비 중…'}` : E.state === 'error' ? '⚙ 실행 환경 오류 (눌러서 확인)' : '⚙ C++ (실행하면 준비)';
       updateEnvText();
     };
     E.onChange(upd);
@@ -534,16 +535,16 @@ class Program
     const preload = store.get('jc.preload', '1') === '1';
     openModal('실행 환경', `
       <div class="table-wrap"><table><tbody>
-        <tr><th>💠 C#</th><td>브라우저 안의 <b>C# 인터프리터</b>(이 강좌용으로 만든 C# 부분집합 실행기) + <b>OpenCV.js 4.13</b>(WebAssembly). OpenCvSharp4 와 같은 API 이름을 씁니다.<br>
+        <tr><th>⚙ C++</th><td>브라우저 안의 <b>Clang/LLD C++ 컴파일러</b>(WebAssembly, C++17) + OpenCV 5.0 C++ API(<code>opencv2/opencv.hpp</code>) + <b>OpenCV.js 5.0</b>. 코드는 실제 C++ 프로그램으로 컴파일되어 실행됩니다.<br>
           상태: <b style="color:${E.state === 'ready' ? 'var(--ok)' : E.state === 'error' ? 'var(--danger)' : 'inherit'}">${esc(st)}</b></td></tr>
         <tr><th>지원</th><td>클래스 · 구조체 · 열거형 · 제네릭 컬렉션(List · Dictionary · HashSet …) · LINQ · 람다 · 예외 · 튜플 · 패턴 매칭 · 문자열 보간 · out/ref · 확장 메서드<br>
-          OpenCvSharp: Mat · Cv2(core · imgproc · 그리기 · 윤곽선 · 허프 · 템플릿 매칭 · 특징점 ORB/BFMatcher · 배경 제거 · 광류 · QR) · VideoCapture(시뮬레이션)</td></tr>
-        <tr><th>미지원</th><td>WPF/WinForms 화면(Window · Image 컨트롤 · 대화상자), 스레드 · Task 병렬, 실제 카메라 · 동영상 파일, dnn · ml · calib3d 모듈, CascadeClassifier — 이런 코드는 <b>🖥 Visual Studio 에서 실행</b> 표시가 있고 로컬 PC 에서 실행합니다.</td></tr>
-        <tr><th>입력 · 키</th><td>${E.mode === 'sab' ? '실행 중 Console.ReadLine 입력 · Cv2.WaitKey 키 입력 사용 가능' : '이 환경에서는 실행 중 입력을 받을 수 없어 미리 입력받습니다 (HTTPS 또는 localhost 로 열면 실행 중 입력이 됩니다)'}</td></tr>
-        <tr><th>작업 폴더</th><td>프로그램의 현재 폴더. 예제 이미지는 <code>images/</code>, <code>Cv2.ImWrite</code> 로 저장한 파일은 📁 작업 폴더에서 내려받을 수 있습니다.</td></tr>
+          OpenCV: cv::Mat · core · imgproc(그리기 · 윤곽선 · 허프 · 템플릿 매칭) · features(ORB · BFMatcher) · 배경 제거 · 광류 · QR · VideoCapture(시뮬레이션)</td></tr>
+        <tr><th>미지원</th><td>마우스 콜백 · 트랙바 · selectROI, std::thread, 실제 카메라 · 동영상 파일, dnn · ml · 카메라 보정(calib) — 이런 코드는 <b>🖥 Visual Studio 에서 실행</b> 표시가 있고 로컬 PC 에서 실행합니다.</td></tr>
+        <tr><th>입력 · 키</th><td>${E.mode === 'sab' ? '실행 중 cin 입력 · waitKey 키 입력 사용 가능' : '이 환경에서는 실행 중 입력을 받을 수 없어 미리 입력받습니다 (HTTPS 또는 localhost 로 열면 실행 중 입력이 됩니다)'}</td></tr>
+        <tr><th>작업 폴더</th><td>프로그램의 현재 폴더. 예제 이미지는 <code>images/</code>, <code>imwrite</code> · <code>ofstream</code> 으로 저장한 파일은 📁 작업 폴더에서 내려받을 수 있습니다.</td></tr>
       </tbody></table></div>
       <div class="meta-row">
-        <button class="btn primary" id="envLoad" ${E.state === 'ready' || E.state === 'loading' ? 'disabled' : ''}>💠 지금 준비</button>
+        <button class="btn primary" id="envLoad" ${E.state === 'ready' || E.state === 'loading' ? 'disabled' : ''}>⚙ 지금 준비</button>
         <label class="chip" style="cursor:pointer"><input type="checkbox" id="envPreload" ${preload ? 'checked' : ''} style="margin-right:6px">페이지를 열 때 미리 준비</label>
       </div>`);
     $('envLoad').onclick = () => { E.load().then(serverModal, serverModal); $('envLoad').disabled = true; $('envLoad').textContent = '준비 중…'; };
@@ -562,10 +563,10 @@ class Program
     else files = E.files.userEntries().map(([p, f]) => ({ name: p, size: f.bytes.length, raw: f.raw }));
     const thumbs = filesTab === 'assets';
     $('modalBody').innerHTML = `${tabs}
-      <p class="muted">${thumbs ? '코드에서 <code>Cv2.ImRead("images/이름.png")</code> 로 쓰는 예제 이미지입니다 (합성 이미지). 눌러서 확대 · 픽셀 값을 확인하세요.' : '내 PC 에서 올린 파일과 프로그램이 <code>Cv2.ImWrite</code> · <code>File.WriteAllText</code> 로 저장한 파일입니다. <code>Cv2.ImRead("파일이름")</code> 으로 다시 읽을 수 있습니다.'}</p>
+      <p class="muted">${thumbs ? '코드에서 <code>imread("images/이름.png")</code> 로 쓰는 예제 이미지입니다 (합성 이미지). 눌러서 확대 · 픽셀 값을 확인하세요.' : '내 PC 에서 올린 파일과 프로그램이 <code>imwrite</code> · <code>ofstream</code> 으로 저장한 파일입니다. <code>imread("파일이름")</code> 으로 다시 읽을 수 있습니다.'}</p>
       <div class="${thumbs ? 'asset-grid' : 'file-list'}">${files.length ? files.map((f) => thumbs
         ? `<div class="asset-tile" data-file="${esc(f.name)}" title="${esc(f.name)}"><img loading="lazy" src="assets/${esc(f.name)}"><span>${esc(f.name.replace(/^images\//, ''))}</span></div>`
-        : `<div class="file-row" data-file="${esc(f.name)}"><span class="fn">${icon(f.name)} ${esc(f.name)}</span><span class="fs">${f.size != null ? size(f.size) : ''}${f.raw ? ` · ${f.raw.w}×${f.raw.h}` : ''}</span></div>`).join('') : '<p class="muted">파일이 없습니다. 예제를 실행해 <code>Cv2.ImWrite("out/result.png", img)</code> 로 저장하거나 아래에서 올려 보세요.</p>'}</div>
+        : `<div class="file-row" data-file="${esc(f.name)}"><span class="fn">${icon(f.name)} ${esc(f.name)}</span><span class="fs">${f.size != null ? size(f.size) : ''}${f.raw ? ` · ${f.raw.w}×${f.raw.h}` : ''}</span></div>`).join('') : '<p class="muted">파일이 없습니다. 예제를 실행해 <code>imwrite("result.png", img)</code> 로 저장하거나 아래에서 올려 보세요.</p>'}</div>
       <div id="fileView"></div>
       <div class="meta-row"><button class="btn ghost" id="filesRefresh">↻ 새로고침</button>
         <label class="btn ghost" style="cursor:pointer" title="이미지 · 텍스트 파일을 작업 폴더에 올립니다">📤 내 PC 파일 올리기<input type="file" id="filesUpload" multiple hidden></label>
@@ -591,12 +592,12 @@ class Program
       $('fileView').querizedAll = null;
       $('fileView').querySelectorAll('[data-zoom]').forEach((el) => { el.onclick = () => window.MVImage.Viewer.openUrl(el.dataset.zoom, name); });
       const use = $('fileView').querySelector('[data-use]');
-      if (use) use.onclick = () => { const line = `var img = Cv2.ImRead("${name}");\n`; if (app.editor.cm) app.editor.cm.replaceSelection(line); else app.editor.setValue(app.editor.getValue() + '\n' + line); closeModal(); app.toast('편집기 커서 위치에 넣었습니다'); };
+      if (use) use.onclick = () => { const line = `Mat img = imread("${name}");\n`; if (app.editor.cm) app.editor.cm.replaceSelection(line); else app.editor.setValue(app.editor.getValue() + '\n' + line); closeModal(); app.toast('편집기 커서 위치에 넣었습니다'); };
       const del = $('fileView').querySelector('[data-del]');
       if (del) del.onclick = () => { E.files.remove(name); filesModal(); };
     });
     $('filesRefresh').onclick = filesModal;
-    $('filesUpload').onchange = async (e) => { for (const file of e.target.files) await E.files.upload(file); app.toast('작업 폴더에 올렸습니다 — Cv2.ImRead("파일이름") 으로 사용'); filesTab = 'work'; filesModal(); };
+    $('filesUpload').onchange = async (e) => { for (const file of e.target.files) await E.files.upload(file); app.toast('작업 폴더에 올렸습니다 — imread("파일이름") 으로 사용'); filesTab = 'work'; filesModal(); };
     const clr = $('filesClear');
     if (clr) clr.onclick = () => { if (!confirm('작업 폴더의 내 파일을 모두 지울까요?')) return; E.files.clear(); filesModal(); };
   }
@@ -624,7 +625,7 @@ class Program
     $('runBtn').onclick = () => runEditor();
     $('resetBtn').onclick = () => { app.editor.setValue(app.editorState.code || CS_TEMPLATE); app.toast('불러온 원래 코드로 되돌렸습니다'); };
     $('copyBtn').onclick = () => copyText(app.editor.getValue());
-    $('dlBtn').onclick = () => download(app.editor.getValue(), /class\s+MainWindow/.test(app.editor.getValue()) ? 'MainWindow.xaml.cs' : 'Program.cs');
+    $('dlBtn').onclick = () => download(app.editor.getValue(), 'main.cpp');
     $('fontUpBtn').onclick = () => setEditorFont(app.edFont + 1);
     $('fontDownBtn').onclick = () => setEditorFont(app.edFont - 1);
     $('foldBtn').onclick = () => { const f = $('editorPane').classList.toggle('folded'); $('foldBtn').textContent = f ? '▴ 펼치기' : '▾ 접기'; if (!f) app.editor.refresh(); };

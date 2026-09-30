@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>C# WPF 로 배우는 OpenCV · 웹 실습 강좌</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💠</text></svg>">
+  <title>C++ 로 배우는 OpenCV 5 · 웹 실습 강좌</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
   <script>
-    // GitHub Pages 처럼 헤더를 설정할 수 없는 곳: 서비스 워커로 교차 출처 격리를 켠다 (실행 중 Console.ReadLine 입력 · WaitKey 키 입력에 필요)
+    // GitHub Pages 처럼 헤더를 설정할 수 없는 곳: 서비스 워커로 교차 출처 격리를 켠다 (실행 중 cin 입력 · waitKey 키 입력에 필요)
     (function () {
       if (window.crossOriginIsolated || !window.isSecureContext || !('serviceWorker' in navigator)) return;
       var n = +(sessionStorage.getItem('coiReload') || 0);
@@ -47,10 +47,10 @@
     <!-- ========== 왼쪽: 네비게이션 ========== -->
     <aside id="nav" class="pane nav">
       <div class="brand">
-        <a class="brand-logo" href="#home" title="처음 화면">💠</a>
+        <a class="brand-logo" href="#home" title="처음 화면">⚙️</a>
         <div class="brand-text">
-          <div class="brand-title">OpenCV · C# WPF</div>
-          <div class="brand-sub" id="brandSub">OpenCvSharp4 · .NET 8</div>
+          <div class="brand-title">OpenCV · C++</div>
+          <div class="brand-sub" id="brandSub">OpenCV 5.0 · Visual Studio</div>
         </div>
         <button id="themeBtn" class="icon-btn" title="라이트/다크 전환" aria-label="테마 전환">◐</button>
         <button id="navCloseBtn" class="icon-btn nav-close" title="메뉴 접기" aria-label="메뉴 접기">⟨</button>
@@ -64,14 +64,14 @@
         <div class="progress"><div id="progressBar" class="progress-fill"></div></div>
       </div>
       <div class="nav-tools">
-        <a class="nav-tool" href="https://github.com/samcho93/studyOpenCVCSharp/tree/main/wpf" title="WPF 예제 프로젝트 (GitHub)" target="_blank" rel="noopener">🪟 WPF 프로젝트</a>
+        <a class="nav-tool" href="https://github.com/samcho93/studyOpenCVCPP/tree/main/vs" title="Visual Studio 예제 솔루션 (GitHub)" target="_blank" rel="noopener">🧰 VS 프로젝트</a>
         <button class="nav-tool" id="navFilesBtn" title="예제 이미지 · 작업 폴더">📁 작업 폴더</button>
       </div>
       <input id="navSearch" class="nav-search" type="search" placeholder="검색 (예: Threshold, 윤곽선, HSV)">
       <nav id="navTree" class="nav-tree" aria-label="강좌 목차"></nav>
       <div class="nav-foot">
-        <button id="serverBtn" class="server-badge" title="C# 실행 환경 정보">
-          <span class="dot"></span><span id="serverText">C# (실행하면 준비)</span>
+        <button id="serverBtn" class="server-badge" title="C++ 실행 환경 정보">
+          <span class="dot"></span><span id="serverText">⚙ C++ (실행하면 준비)</span>
         </button>
       </div>
     </aside>
@@ -98,7 +98,7 @@
         <section id="editorPane" class="editor-pane">
           <div class="editor-bar">
             <span class="editor-title">🧪 실습 코드 <span id="editorLabel" class="muted"></span></span>
-            <span class="chip lang-chip">💠 C# · OpenCvSharp4</span>
+            <span class="chip lang-chip">⚙ C++17 · OpenCV 5.0</span>
             <span class="spacer"></span>
             <button id="foldBtn" class="btn ghost small" title="에디터 접기/펼치기">▾ 접기</button>
             <button id="fontDownBtn" class="btn ghost small" title="글자 작게">A−</button>
@@ -197,8 +197,8 @@
         <div id="jcConsole" class="console" tabindex="0">
           <div class="console-welcome">
             <div class="cw-icon">&gt;_</div>
-            <p><b>▶ 실행</b>을 누르면 C# 코드의 실행 결과가 여기에 표시됩니다.</p>
-            <p class="muted"><code>Console.WriteLine</code> 출력은 물론 <b><code>Cv2.ImShow</code> 이미지 창</b>이 이 창에 그려집니다.
+            <p><b>▶ 실행</b>을 누르면 C++ 코드를 컴파일해 실행한 결과가 여기에 표시됩니다.</p>
+            <p class="muted"><code>cout</code> 출력은 물론 <b><code>imshow</code> 이미지 창</b>이 이 창에 그려집니다.
               이미지 위에 마우스를 올리면 좌표와 픽셀 값(B, G, R)이, 누르면 확대 보기가 열립니다.</p>
           </div>
         </div>
@@ -225,7 +225,7 @@
   <script src="js/mlb.js"></script>
   <script src="js/highlight.js"></script>
   <script src="js/annotate.js"></script>
-  <script src="js/cs-engine.js"></script>
+  <script src="js/cv-engine.js"></script>
   <script src="js/imageview.js"></script>
   <script src="js/runner.js"></script>
   <script src="js/slides.js"></script>
