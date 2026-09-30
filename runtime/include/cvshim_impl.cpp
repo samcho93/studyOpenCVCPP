@@ -93,8 +93,30 @@ struct Call {
       int code = Error::StsError;
       size_t p = msg.find("(-");
       if (p != std::string::npos) code = std::atoi(msg.c_str() + p + 1);
+      // "OpenCV(5.0.0) 파일:줄: error: (-215:Assertion failed) 조건 in function '함수'" → 실제 OpenCV 처럼 필드를 나눈다
       Exception e;
       e.msg = msg; e.code = code; e.err = msg; e.func = name; e.line = 0;
+      size_t q = msg.find(") ", p == std::string::npos ? 0 : p);
+      if (p != std::string::npos && q != std::string::npos && msg.compare(q + 2, 13, "in function '") == 0) {
+        // CV_Check 형식: "(-15:...) in function '함수'\n> 설명..."
+        size_t g = msg.find("'\n", q + 15);
+        if (g == std::string::npos) g = msg.rfind('\'');
+        e.func = msg.substr(q + 15, g - q - 15);
+        e.err = g + 2 < msg.size() ? msg.substr(g + 2) : std::string();
+        while (!e.err.empty() && (e.err.back() == '\n' || e.err.back() == ' ')) e.err.pop_back();
+      } else if (p != std::string::npos && q != std::string::npos) {
+        size_t f = msg.find(" in function '", q);
+        e.err = msg.substr(q + 2, f == std::string::npos ? std::string::npos : f - q - 2);
+        while (!e.err.empty() && (e.err.back() == '\n' || e.err.back() == ' ')) e.err.pop_back();
+        if (f != std::string::npos) { size_t g = msg.find('\'', f + 14); e.func = msg.substr(f + 14, g == std::string::npos ? std::string::npos : g - f - 14); }
+      }
+      size_t sp = msg.find(") ");
+      size_t ce = msg.find(": error:");
+      if (sp != std::string::npos && ce != std::string::npos && ce > sp) {
+        std::string fl = msg.substr(sp + 2, ce - sp - 2);
+        size_t colon = fl.rfind(':');
+        if (colon != std::string::npos) { e.file = fl.substr(0, colon); e.line = std::atoi(fl.c_str() + colon + 1); } else e.file = fl;
+      }
       throw e;
     }
     for (size_t k = 0; k < outs.size(); k++) fetch((int)k, *outs[k]);
@@ -1355,6 +1377,8 @@ void destroyAllWindows() { Call c("destroyAllWindows"); c.run(); }
 void moveWindow(const std::string&, int, int) {}
 void resizeWindow(const std::string&, int, int) {}
 void setWindowTitle(const std::string&, const std::string&) {}
+double getWindowProperty(const std::string&, int prop) { return prop == WND_PROP_VISIBLE ? 1.0 : prop == WND_PROP_AUTOSIZE ? 1.0 : 0.0; }   // 브라우저의 결과 창은 늘 열려 있다
+void setWindowProperty(const std::string&, int, double) {}
 void setMouseCallback(const std::string&, MouseCallback, void*) { notSupported("setMouseCallback (마우스 이벤트)"); }
 static std::map<std::string, int*>& trackbars() { static std::map<std::string, int*> m; return m; }
 int createTrackbar(const std::string& tn, const std::string& wn, int* value, int count, TrackbarCallback cb, void* ud) {

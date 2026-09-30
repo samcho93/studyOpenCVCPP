@@ -148,7 +148,8 @@ for (const id of targets) {
     if (r.timeout) { err(`${c.label}: 시간 초과 (무한 반복?)`); continue; }
     if (r.exit !== 0) { err(`${c.label}: 종료 코드 ${r.exit}${r.trap ? ' ' + r.trap : ''}\n      ${String(r.err || '').trim().split('\n').slice(0, 3).join('\n      ')}`); if (print) console.log(indent(r.out)); continue; }
     if (r.ms > 4000) warn(`${c.label}: 실행 ${(r.ms / 1000).toFixed(1)}초 (3초 이내 권장)`);
-    if (r.notes && r.notes.length) warn(`${c.label}: 실행 노트 — ${r.notes.join(' | ')}`);
+    const notes = (r.notes || []).filter((n) => !/^(📷|🎞)|시뮬레이션/.test(n));
+    if (notes.length) warn(`${c.label}: 실행 노트 — ${notes.join(' | ')}`);
     if (r.err && r.err.trim() && !/\[ WARN/.test(r.err)) warn(`${c.label}: 표준 오류 출력 — ${r.err.trim().slice(0, 200)}`);
     if (c.expect != null && !c.nondeterministic) {
       if (norm(r.out) !== norm(c.expect)) err(`${c.label}: 출력이 expect 와 다릅니다\n    기대: ${JSON.stringify(norm(c.expect))}\n    실제: ${JSON.stringify(norm(r.out))}`);

@@ -374,7 +374,7 @@ int main()
     catch (const cv::Exception& e)
     {
         // e.what() 에는 파일 · 줄 · 함수 이름 · 깨진 조건식이 들어 있습니다
-        cout << "cv::Exception 발생! 함수: " << e.func << endl;
+        cout << "cv::Exception 발생!" << endl;
         cout << "오류 코드: " << e.code << endl;
     }
     cout << "프로그램은 계속 실행됩니다" << endl;
@@ -688,8 +688,8 @@ int main()
             desc: '<code>imread</code> 는 실패해도 <b>예외를 던지지 않고 빈 Mat</b> 을 돌려줍니다. 읽은 직후 <code>img.empty()</code> 를 검사하지 않으면, 빈 Mat 이 다음 함수로 넘어가서야 알 수 없는 오류가 납니다. 두 번째는 폴더 이름 오타(<code>image</code>), 세 번째는 파일 이름 오타(<code>colour</code>)입니다. 결과 창 위쪽의 실행 노트에도 “파일이 없어 빈 Mat” 안내가 나옵니다. 로컬에서는 <code>std::filesystem::exists(p)</code>(C++17)로 파일이 있는지 먼저 확인하면 “경로 문제” 와 “파일 형식 문제” 를 구분할 수 있습니다.',
             expect: '[images/sample_color.png]\n   -> OK 640 x 480\n[image/sample_color.png]\n   -> 빈 Mat! 작업 디렉터리 · 경로를 확인하세요\n[images/sample_colour.png]\n   -> 빈 Mat! 작업 디렉터리 · 경로를 확인하세요' },
           { type: 'code', title: '예제 5: OpenCV 오류는 cv::Exception 으로 잡는다', code: EX_EXCEPTION,
-            desc: 'OpenCV 함수의 조건(assertion)이 깨지면 <b><code>cv::Exception</code></b> 이 던져집니다. 잡지 않으면 로컬에서는 “처리되지 않은 예외” 로 프로그램이 멈추고 Visual Studio 가 예외 창을 띄웁니다. <code>e.what()</code> 에는 <code>OpenCV(5.0.0) … error: (-15:Bad number of channels) …</code> 형식의 전체 메시지가, <code>e.func</code> · <code>e.code</code> 에는 함수 이름과 오류 코드(<code>-15</code> = <code>Error::BadNumChannels</code>, 채널 수 오류)가 들어 있습니다. 로컬 OpenCV 에서는 <code>e.func</code> 가 내부 함수의 긴 이름으로 나올 수 있습니다.',
-            expect: '입력: 1채널\ncv::Exception 발생! 함수: cvtColor\n오류 코드: -15\n프로그램은 계속 실행됩니다' },
+            desc: 'OpenCV 함수의 조건(assertion)이 깨지면 <b><code>cv::Exception</code></b> 이 던져집니다. 잡지 않으면 로컬에서는 “처리되지 않은 예외” 로 프로그램이 멈추고 Visual Studio 가 예외 창을 띄웁니다. <code>e.what()</code> 에는 <code>OpenCV(5.0.0) … error: (-15:Bad number of channels) …</code> 형식의 전체 메시지가, <code>e.err</code> 에는 깨진 조건, <code>e.code</code> 에는 오류 코드(<code>-15</code> = <code>Error::BadNumChannels</code>, 채널 수 오류), <code>e.func</code> 에는 오류가 난 함수 이름이 들어 있습니다. <code>e.func</code> 는 <code>cvtColor</code> 안의 템플릿 도우미처럼 <b>내부 함수의 긴 이름</b>으로 나오는 경우가 많아 출력에 쓰기에는 불편합니다.',
+            expect: '입력: 1채널\ncv::Exception 발생!\n오류 코드: -15\n프로그램은 계속 실행됩니다' },
           { type: 'h', text: '⑤ 속성 시트(OpenCV5.props)로 설정 재사용하기' },
           { type: 'p', html: '새 프로젝트를 만들 때마다 표 2 를 다시 입력하는 것은 번거롭고 실수하기 쉽습니다. <b>속성 시트(.props)</b>는 프로젝트 설정만 모은 XML 파일로, 여러 프로젝트에 붙여 쓸 수 있습니다. 아래 파일을 <code>OpenCV5.props</code> 로 저장해 두면 새 프로젝트에서 <b>한 번의 “추가”</b>로 OpenCV 설정이 끝납니다. <code>Condition="\'$(Configuration)\'==\'Debug\'"</code> 로 Debug/Release 의 lib 이름을 자동으로 고릅니다.' },
           { type: 'code', title: 'OpenCV5.props — OpenCV 5.0 속성 시트', lang: 'xml', file: 'OpenCV5.props', code: XML_PROPS, run: false,

@@ -4,7 +4,7 @@
  */
 
 /** 헤더·구현을 바꾸면 올린다 (브라우저 캐시 무효화) */
-export const SHIM_VERSION = '20260930a';
+export const SHIM_VERSION = '20261001a';
 
 /** 파일 구분 주석:  // ===== File: shape.h ===== */
 export const FILE_MARK = /^\s*\/\/\s*=+\s*(?:file|파일)\s*:\s*([\w./-]+?\.(?:cpp|cc|cxx|h|hpp|hh|txt|dat|csv))\s*=*\s*$/i;

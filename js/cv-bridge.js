@@ -332,8 +332,16 @@
       pyrUp: (a) => { const d = newMat(); cv.pyrUp(M(a[0]), d, S(a[2]), a[3]); a[1].set(d); },
       equalizeHist: (a) => { const d = newMat(); cv.equalizeHist(M(a[0]), d); a[1].set(d); },
       calcHist: (a) => {
-        const hist = a[7] && (a[6] ? true : false) && !a[7].empty ? a[7].mat().clone() : new cv.Mat();
-        cv.calcHist(V(a[0]), a[1], M(a[2]), hist, a[4], a[5], !!a[6]);
+        // OpenCV.js 는 1차원 히스토그램을 1×N 으로 돌려주지만 실제 OpenCV(C++)는 N×1 → 모양을 맞춘다.
+        // 누적(accumulate)은 새로 계산한 히스토그램에 이전 값을 더한다 (OpenCV 5 의 1차원 배열 규칙 때문에 직접 처리)
+        const oneD = a[4].length === 1;
+        let hist = new cv.Mat();
+        cv.calcHist(V(a[0]), a[1], M(a[2]), hist, a[4], a[5], false);
+        if (oneD && hist.rows === 1 && hist.cols > 1) { const t = new cv.Mat(); cv.transpose(hist, t); hist.delete(); hist = t; }
+        if (a[6] && a[7] && !a[7].empty) {
+          const prev = a[7].mat();
+          if (prev.total() === hist.total()) { const p2 = prev.rows === hist.rows ? prev : track(new cv.Mat()); if (p2 !== prev) cv.transpose(prev, p2); cv.add(hist, p2, hist); }
+        }
         a[3].set(hist);
       },
       calcBackProject: (a) => { const d = newMat(); cv.calcBackProject(V(a[0]), a[1], M(a[2]), d, a[4], a[5]); a[3].set(d); },

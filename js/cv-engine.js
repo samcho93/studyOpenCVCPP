@@ -5,7 +5,7 @@
  *  - 실행 워커(js/cv-run-worker.js): OpenCV.js 5.0 + WASI — 한 번 준비해 두고 계속 사용 (강제 중지하면 다시 만든다)
  */
 (function () {
-  const VERSION = '20260930a';
+  const VERSION = '20261001a';
   const base = location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, '');
   const E = {
     state: 'idle', message: '', pct: 0, loadMs: 0, listeners: [], opencv: '5.0',
