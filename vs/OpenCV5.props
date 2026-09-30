@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  OpenCV 5.0 속성 시트 (모든 예제 프로젝트가 함께 사용)
+  준비: opencv-5.0.0-windows.exe 를 C:\opencv 에 풀고, 환경 변수 OPENCV_DIR = C:\opencv\build\x64\vc17
+        (실제 폴더 이름 vc16 / vc17 / vc18 을 확인하세요)
+  라이브러리 이름이 다르면 아래 OpenCVLibVer 만 바꾸면 됩니다 (예: opencv_world500.lib → 500).
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <OpenCVDir Condition="'$(OPENCV_DIR)' != ''">$(OPENCV_DIR)</OpenCVDir>
+    <OpenCVDir Condition="'$(OPENCV_DIR)' == ''">C:\opencv\build\x64\vc17</OpenCVDir>
+    <OpenCVLibVer>500</OpenCVLibVer>
+    <OpenCVLibSuffix Condition="'$(Configuration)' == 'Debug'">d</OpenCVLibSuffix>
+    <OpenCVLibSuffix Condition="'$(Configuration)' != 'Debug'"></OpenCVLibSuffix>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- F5 로 실행할 때 DLL 을 찾도록 PATH 에 bin 폴더를 더하고, 작업 폴더를 솔루션 폴더(images/ 가 있는 곳)로 -->
+    <LocalDebuggerEnvironment>PATH=$(OpenCVDir)\bin;%PATH%</LocalDebuggerEnvironment>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(OpenCVDir)\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- /utf-8: 한글 문자열을 UTF-8 로 저장 · 출력, /Zc:__cplusplus: __cplusplus 값을 실제 표준으로 -->
+      <AdditionalOptions>/utf-8 /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(OpenCVDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world$(OpenCVLibVer)$(OpenCVLibSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>

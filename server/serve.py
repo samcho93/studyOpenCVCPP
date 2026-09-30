@@ -129,8 +129,8 @@ def main():
             stream.reconfigure(encoding='utf-8', errors='replace')
         except (AttributeError, ValueError):
             pass
-    ap = argparse.ArgumentParser(description='파이썬 웹 실습 강좌 서버')
-    ap.add_argument('--port', type=int, default=8080)
+    ap = argparse.ArgumentParser(description='C++ OpenCV 웹 실습 강좌 서버')
+    ap.add_argument('--port', type=int, default=int(os.environ.get('PORT', 8080)))
     ap.add_argument('--lan', action='store_true', help='같은 네트워크에서 접속 허용')
     args = ap.parse_args()
     host = '0.0.0.0' if args.lan else '127.0.0.1'

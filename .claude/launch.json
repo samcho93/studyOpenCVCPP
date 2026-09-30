@@ -4,8 +4,9 @@
     {
       "name": "cvcpp-site",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["server/serve.py", "--port", "8093"],
-      "port": 8093
+      "runtimeArgs": ["server/serve.py"],
+      "port": 8093,
+      "autoPort": true
     }
   ]
 }

@@ -234,7 +234,7 @@
       // ------------------------------------------------ 기타
       note: (a) => { if (host.note) host.note(a[0]); },
       notSupported: (a) => noteOnce('ns:' + a[0], `${a[0]} 은(는) 브라우저 실습 환경에서 지원하지 않아 건너뜁니다. Visual Studio 의 실제 OpenCV 에서는 동작합니다.`),
-      getBuildInformation: () => { retStr = 'OpenCV.js ' + String(cv.getBuildInformation()).split('\n').slice(0, 3).join('\n'); },
+      getBuildInformation: () => { retStr = 'OpenCV.js ' + String(cv.getBuildInformation()).replace(/5\.0\.0-pre/g, '5.0.0').split('\n').filter((l) => !/Version control/.test(l)).slice(0, 3).join('\n'); },
       release: (a) => { const o = objs.get(a[0]); if (o) { objs.delete(a[0]); if (o.delete && !o.isDeleted?.()) try { o.delete(); } catch (e) { /* 무시 */ } } },
 
       // ------------------------------------------------ core
