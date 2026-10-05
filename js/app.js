@@ -62,7 +62,7 @@
 
   /** 교사용 화면은 비밀번호를 한 번 확인한다 */
   function teacherAllowed() {
-    const pass = String(C.teacherPass || 'cv2026');
+    const pass = String(C.teacherPass || 'samcho93');
     if (store.get('jc.teacherOk', '') === pass) return true;
     const v = window.prompt('교사용 화면 비밀번호를 입력하세요.', '');
     if (v == null) return false;

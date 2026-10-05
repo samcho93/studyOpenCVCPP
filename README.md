@@ -40,7 +40,7 @@ node tools/build-shim.mjs               # runtime/include 를 고친 뒤 runtime
 ```
 
 ## 교사용 화면
-왼쪽 위 **🧑‍🏫 교사용** 버튼 → 비밀번호(`js/course.js` 의 `teacherPass`, 기본값 `cv2026`). 단축키: `F` 전체 화면, `← →` 이동, `G` 목록, `N` 노트, `T` 타이머, `B` 검은 화면, `R` 결과 패널, `Ctrl+Z` 판서 되돌리기.
+왼쪽 위 **🧑‍🏫 교사용** 버튼 → 비밀번호(`js/course.js` 의 `teacherPass`, 기본값 `samcho93`). 단축키: `F` 전체 화면, `← →` 이동, `G` 목록, `N` 노트, `T` 타이머, `B` 검은 화면, `R` 결과 패널, `Ctrl+Z` 판서 되돌리기.
 
 ## 라이선스 · 출처
 - OpenCV · OpenCV.js: Apache 2.0 (https://opencv.org).

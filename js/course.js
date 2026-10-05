@@ -5,7 +5,7 @@
 window.CV_COURSE = {
   title: 'C++ 로 배우는 OpenCV 5',
   short: 'OpenCV · C++',
-  teacherPass: 'cv2026',   // 교사용 화면 비밀번호 (바꿔서 쓰세요)
+  teacherPass: 'samcho93',   // 교사용 화면 비밀번호 (바꿔서 쓰세요)
   subtitle: 'Visual Studio · C++17 · OpenCV 5.0',
   github: { user: 'samcho93', repo: 'studyOpenCVCPP', branch: 'main' },
   parts: [
